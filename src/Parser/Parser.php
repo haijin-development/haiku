@@ -4,6 +4,7 @@ namespace Haijin\Haiku\Parser;
 
 use Haijin\Instantiator\Create;
 use Haijin\Ordered_Collection;
+use Haijin\Haiku\UnexpectedExpressionError;
 
 class Parser
 {
@@ -70,10 +71,11 @@ class Parser
             $matched = $token->evaluate_on( $this );
 
             if( $matched ) {
-                break;
+                return;
             }
         }
 
+        $this->raise_unexpected_expression_error();
     }
 
     public function new_line()
@@ -89,4 +91,13 @@ class Parser
         return $this->char_index >= strlen( $this->string );
     }
 
+
+    protected function raise_unexpected_expression_error()
+    {
+        $matches = [];
+
+        preg_match( "/.*(?=\n)/A", $this->string, $matches, 0, $this->char_index );
+
+        throw new UnexpectedExpressionError( "Unexpected expression \"{$matches[0]}\". At line: {$this->line_index} column: {$this->column_index}." );
+    }
 }

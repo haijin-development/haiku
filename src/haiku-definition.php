@@ -81,7 +81,7 @@ $parser->token( "indentation", "/((?: |\t)+)(?! |\t)/A", function($spaces) {
 });
 
 // Match tag names.
-$parser->token( "tag", "/([0-9a-zA-z_\-]+)\n/A", function($tag) {
+$parser->token( "tag", "/([0-9a-zA-z_\-]+)(?![0-9a-zA-z_\-])/A", function($tag) {
 
     $tag_node = Create::a( Haiku_Tag::class )->with( $tag );
 
@@ -114,7 +114,7 @@ $parser->token( "tag", "/([0-9a-zA-z_\-]+)\n/A", function($tag) {
 });
 
 // Match '='' followed by a PHP expression.
-$parser->token( "text", "/=(.+)\n/A", function($expression) {
+$parser->token( "text", "/=(.+)(?=\n)/A", function($expression) {
 
     $tag_node = Create::a( Haiku_PHP_Expression::class )
         ->with( trim( $expression ) );

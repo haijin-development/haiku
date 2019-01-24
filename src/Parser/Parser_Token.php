@@ -40,7 +40,7 @@ class Parser_Token
         if( $matched_line[ strlen( $matched_line ) - 1 ] == "\n" ) {
             $parser->new_line();
         } else {
-            $parser->column_index += strlen( $matching_length );
+            $parser->column_index += $matching_length;
         }
 
         return true;
