@@ -28,7 +28,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Haijin\\Haiku\\": ["src/"]
+            "Haijin\\Haiku\\": ["src/", "src/haiku-dom/", "src/errors/"]
         }
     },
     "scripts": {
