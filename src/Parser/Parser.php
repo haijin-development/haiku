@@ -35,7 +35,7 @@ class Parser
     {
         $this->string = $string;
 
-        $this->parser_definition->get_before_parsing_closure()->call( $this );
+        $this->evaluate_closure( $this->parser_definition->get_before_parsing_closure() );
 
         $this->char_index = 0;
         $this->line_index = 1;
@@ -47,7 +47,17 @@ class Parser
 
         }
 
-        return $this->parser_definition->get_after_parsing_closure()->call( $this );
+        return $this->evaluate_closure( $this->parser_definition->get_after_parsing_closure() );
+    }
+
+    protected function evaluate_closure($closure)
+    {
+        if( $closure === null ) {
+            return $closure;
+        }
+
+        return $closure->call( $this );
+
     }
 
     /// Parsing

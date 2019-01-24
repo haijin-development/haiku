@@ -33,6 +33,12 @@ $parser->after_parsing( function() {
 
 });
 
+
+$parser->token( "cr", "/(\n)/A", function($cr) {
+    $this->indentation = 0;
+});
+
+
 // Match spaces and tabs.
 $parser->token( "indentation", "/((?: |\t)+)(?! |\t)/A", function($spaces) {
 
