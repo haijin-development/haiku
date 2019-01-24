@@ -5,6 +5,13 @@ namespace Haijin\Haiku;
 use Haijin\Instantiator\Create;
 use Haijin\Ordered_Collection;
 
+/*
+ * Regex cheatsheet:
+ *      group without capturing: (?:)
+ *      lookahead assertion: (?=)
+ *      lookahead negation: (?!)
+ */
+
 $parser->before_parsing( function() {
 
     $this->indentation_char = null;
@@ -26,7 +33,8 @@ $parser->after_parsing( function() {
 
 });
 
-$parser->token( "indentation", "/(\s+)/A", function($spaces) {
+// Match spaces and tabs.
+$parser->token( "indentation", "/((?: |\t)+)(?! |\t)/A", function($spaces) {
 
     $spaces_count = strlen( $spaces );
 
@@ -66,6 +74,7 @@ $parser->token( "indentation", "/(\s+)/A", function($spaces) {
 
 });
 
+// Match tag names.
 $parser->token( "tag", "/([0-9a-zA-z_\-]+)/A", function($tag) {
 
     $tag_node = Create::a( Haiku_Tag::class )->with( $tag );
@@ -102,6 +111,7 @@ $parser->token( "tag", "/([0-9a-zA-z_\-]+)/A", function($tag) {
 
 });
 
+// Match '='' followed by a PHP expression.
 $parser->token( "text", "/=(.+)/A", function($expression) {
 
     $tag_node = Create::a( Haiku_PHP_Expression::class )
@@ -116,10 +126,6 @@ $parser->token( "text", "/=(.+)/A", function($expression) {
     if( $this->indentation == $this->previous_indentation + 1 ) {
 
         $this->push_node( $this->current_node()->last_child() );
-
-        if( $this->current_node() === null ) {
-            var_dump( $this->nodes );
-        }
 
         $this->current_node()->add_child( $tag_node );
 
