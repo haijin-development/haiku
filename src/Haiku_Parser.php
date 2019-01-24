@@ -25,6 +25,38 @@ class Haiku_Parser extends Parser
             ->define_in_file( __DIR__ . "/haiku-definition.php" );
     }
 
+    /// Indentation
+
+    protected function adjust_nodes_to_indentation($node)
+    {
+        if( $this->indentation == $this->previous_indentation ) {
+
+            $this->current_node()->add_child( $node );
+
+        }
+
+        if( $this->indentation == $this->previous_indentation + 1 ) {
+
+            $this->push_node( $this->current_node()->last_child() );
+
+            $this->current_node()->add_child( $node );
+
+        }
+
+        if( $this->indentation < $this->previous_indentation ) {
+
+            for( $i = $this->previous_indentation; $this->indentation < $i; $i-- ) {
+                $this->pop_node();
+            }
+
+            $this->current_node()->add_child( $node );
+
+        }
+
+
+        $this->previous_indentation = $this->indentation;
+    }
+
     /// Stacking nodes
 
     protected function current_node()

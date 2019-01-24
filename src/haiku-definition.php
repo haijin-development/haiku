@@ -85,64 +85,17 @@ $parser->token( "tag", "/([0-9a-zA-z_\-]+)(?![0-9a-zA-z_\-])/A", function($tag) 
 
     $tag_node = Create::a( Haiku_Tag::class )->with( $tag );
 
-    if( $this->indentation == $this->previous_indentation ) {
+    $this->adjust_nodes_to_indentation( $tag_node );
 
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    if( $this->indentation == $this->previous_indentation + 1 ) {
-
-        $this->push_node( $this->current_node()->last_child() );
-
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    if( $this->indentation < $this->previous_indentation ) {
-
-        for( $i = $this->previous_indentation; $this->indentation < $i; $i-- ) {
-            $this->pop_node();
-        }
-
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    $this->previous_indentation = $this->indentation;
 
 });
 
 // Match '='' followed by a PHP expression.
 $parser->token( "text", "/=(.+)(?=\n)/A", function($expression) {
 
-    $tag_node = Create::a( Haiku_PHP_Expression::class )
+    $php_expression_node = Create::a( Haiku_PHP_Expression::class )
         ->with( trim( $expression ) );
 
-    if( $this->indentation == $this->previous_indentation ) {
-
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    if( $this->indentation == $this->previous_indentation + 1 ) {
-
-        $this->push_node( $this->current_node()->last_child() );
-
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    if( $this->indentation < $this->previous_indentation ) {
-
-        for( $i = $this->previous_indentation; $this->indentation < $i; $i-- ) {
-            $this->pop_node();
-        }
-
-        $this->current_node()->add_child( $tag_node );
-
-    }
-
-    $this->previous_indentation = $this->indentation;
+    $this->adjust_nodes_to_indentation( $php_expression_node );
 
 });
