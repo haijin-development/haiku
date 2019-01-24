@@ -7,17 +7,20 @@ use Haijin\Ordered_Collection;
 
 class Parser
 {
-    protected $string;
-
-    protected $lines;
-    public $line_index;
-    public $line;
+    public $string;
     public $char_index;
+    public $line_index;
+    public $column_index;
 
     /// Initializing
 
     public function __construct($parser_definition)
     {
+        $this->string = null;
+        $this->char_index = null;
+        $this->line_index = 1;
+        $this->column_index = 1;
+
         $this->parser_definition = $parser_definition;
     }
 
@@ -32,20 +35,15 @@ class Parser
     {
         $this->string = $string;
 
-        $this->lines = explode( "\n", $this->string );
-        $this->line_index = 0;
-        $this->line = null;
-        $this->char_index = 0;
-
         $this->parser_definition->get_before_parsing_closure()->call( $this );
+
+        $this->char_index = 0;
+        $this->line_index = 1;
+        $this->column_index = 1;
 
         while( ! $this->at_eof() ) {
 
-            $this->line = $this->current_line();
-
-            $this->parse_line();
-
-            $this->line_index += 1;
+            $this->parse_next_expression();
 
         }
 
@@ -54,10 +52,8 @@ class Parser
 
     /// Parsing
 
-    protected function parse_line()
+    protected function parse_next_expression()
     {
-
-        $this->char_index = 0;
 
         $this->parser_definition->get_tokens()->each_do( function($token) {
 
@@ -67,16 +63,17 @@ class Parser
 
     }
 
+    public function new_line()
+    {
+        $this->line_index += 1;
+        $this->column_index = 1;
+    }
+
     /// Querying string buffer
 
     protected function at_eof()
     {
-        return $this->line_index >= count( $this->lines );
-    }
-
-    protected function current_line()
-    {
-        return $this->lines[ $this->line_index ];
+        return $this->char_index >= strlen( $this->string );
     }
 
 }

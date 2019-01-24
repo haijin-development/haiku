@@ -58,28 +58,28 @@ class Haiku_Parser extends Parser
         };
 
         throw Create::an( UnmatchedIndentationError::class )->with(
-                "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->line_index} column: {$this->char_index}."
+                "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->line_index} column: {$this->column_index}."
             );
     }
 
     protected function raise_not_unique_indentation_char_error()
     {
         throw Create::an( NotUniqueIndentationCharError::class )->with(
-                "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->line_index} column: {$this->char_index}." 
+                "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->line_index} column: {$this->column_index}."
         );
     }
 
     protected function raise_indentation_char_missmatch_error($used_chars, $missmatched_chars)
     {
         throw Create::an( IndentationCharMissmatchError::class )->with(
-                "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->line_index} column: {$this->char_index}." 
+                "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->line_index} column: {$this->column_index}."
         );
     }
 
     protected function raise_invalid_indentation_increment_error()
     {
         throw Create::an( InvalidIndentationIncrementError::class )->with(
-                "Invalid indentation was found. An increment of only one unit was expected. At line: {$this->line_index} column: {$this->char_index}." 
+                "Invalid indentation was found. An increment of only one unit was expected. At line: {$this->line_index} column: {$this->column_index}."
         );
     }
 
