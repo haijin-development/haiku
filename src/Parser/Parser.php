@@ -55,11 +55,14 @@ class Parser
     protected function parse_next_expression()
     {
 
-        $this->parser_definition->get_tokens()->each_do( function($token) {
+        foreach( $this->parser_definition->get_tokens()->to_array() as $token ) {
 
-            $token->evaluate_on( $this );
+            $matched = $token->evaluate_on( $this );
 
-        }, $this );
+            if( $matched ) {
+                break;
+            }
+        }
 
     }
 

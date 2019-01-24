@@ -26,7 +26,7 @@ class Parser_Token
         \preg_match( $this->pattern, $parser->string, $matches, 0, $parser->char_index );
 
         if( empty( $matches ) ) {
-            return;
+            return false;
         }
 
         $matched_line = $matches[0];
@@ -41,9 +41,9 @@ class Parser_Token
             $parser->new_line();
         } else {
             $parser->column_index += strlen( $matching_length );
-
         }
 
+        return true;
     }
 
 }
