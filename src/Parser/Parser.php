@@ -96,7 +96,7 @@ class Parser
     {
         $matches = [];
 
-        preg_match( "/.*(?=\n)/A", $this->string, $matches, 0, $this->char_index );
+        preg_match( "/.*(?=\n?)/A", $this->string, $matches, 0, $this->char_index );
 
         throw new UnexpectedExpressionError( "Unexpected expression \"{$matches[0]}\". At line: {$this->line_index} column: {$this->column_index}." );
     }

@@ -6,6 +6,13 @@ use Haijin\Instantiator\Create;
 use Haijin\File_Path;
 use Haijin\Ordered_Collection;
 
+/*
+ * Regex cheatsheet:
+ *      group without capturing: (?:)
+ *      lookahead assertion: (?=)
+ *      lookahead negation: (?!)
+ */
+
 class Parser_Definition
 {
     protected $before_parsing_closure;
