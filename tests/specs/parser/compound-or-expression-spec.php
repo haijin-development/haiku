@@ -3,7 +3,7 @@
 use Haijin\Haiku\Parser\Parser;
 use Haijin\Haiku\Parser\Parser_Definition;
 
-$spec->xdescribe( "When matching a particle among several", function() {
+$spec->describe( "When matching a particle among several", function() {
 
     $this->let( "parser", function() {
 
@@ -23,9 +23,7 @@ $spec->xdescribe( "When matching a particle among several", function() {
 
                 });
 
-                $this->handler( function($integer_or_alpha) {
-
-                    var_dump( $integer_or_alpha );
+                $this->handler( function($integer_or_alpha = null) {
 
                     return $integer_or_alpha;
 
@@ -107,7 +105,7 @@ $spec->xdescribe( "When matching a particle among several", function() {
             return "#";
         });
 
-        $this->xit( "evaluates the handler closure", function() {
+        $this->it( "evaluates the handler closure", function() {
 
             $result = $this->parser->parse_string( $this->input );
 
@@ -120,10 +118,10 @@ $spec->xdescribe( "When matching a particle among several", function() {
     $this->describe( "for an unexpected expression at the beginning", function() {
 
         $this->let( "input", function() {
-            return "a+4";
+            return "+123";
         });
 
-        $this->xit( "raises an error", function() {
+        $this->it( "raises an error", function() {
 
             $this->expect( function() {
 
@@ -134,7 +132,7 @@ $spec->xdescribe( "When matching a particle among several", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to() ->equal(
-                        'Unexpected expression "a+4". At line: 1 column: 1.'
+                        'Unexpected expression "+123". At line: 1 column: 1.'
                     );
             }); 
 
@@ -145,10 +143,10 @@ $spec->xdescribe( "When matching a particle among several", function() {
     $this->describe( "for an unexpected expression after an expected expression", function() {
 
         $this->let( "input", function() {
-            return "3+a";
+            return "123+";
         });
 
-        $this->xit( "raises an error", function() {
+        $this->it( "raises an error", function() {
 
             $this->expect( function() {
 
@@ -159,7 +157,7 @@ $spec->xdescribe( "When matching a particle among several", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to() ->equal(
-                        'Unexpected expression "a". At line: 1 column: 3.'
+                        'Unexpected expression "+". At line: 1 column: 4.'
                     );
             }); 
 
