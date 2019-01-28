@@ -19,13 +19,15 @@ class Parser
 
     public function __construct($parser_definition)
     {
+        $this->parser_definition = $parser_definition;
+
         $this->string = null;
         $this->string_length = 0;
 
         $this->context_frame = $this->new_context_frame();
         $this->frames_stack = Create::an( Ordered_Collection::class )->with();
 
-        $this->parser_definition = $parser_definition;
+        $this->parsing_error = null;
     }
 
     protected function new_context_frame()
@@ -37,6 +39,8 @@ class Parser
         $context_frame->column_index = 1;
 
         $context_frame->current_expression = null;
+        $context_frame->current_particles_sequences =
+            Create::an( Ordered_Collection::class )->with();
         $context_frame->expected_particles =
             Create::an( Ordered_Collection::class )->with();
 
@@ -71,7 +75,37 @@ class Parser
         return $this->context_frame->handler_params[ 0 ];
     }
 
+    protected function do_parsing_loop()
+    {
+        while( ! $this->at_eof() ) {
 
+            if( $this->context_frame->current_expression === null ) {
+                $this->raise_unexpected_expression_error();
+            }
+
+            while( $this->context_frame->expected_particles->not_empty() )
+            {
+                $particle = $this->context_frame->expected_particles->remove_first();
+
+                $this->parse_particle( $particle );
+            }
+        }
+    }
+
+    public function parse_particle($particle)
+    {
+        $this->context_frame->matched_length = 0;
+        $this->context_frame->matched_cr = false;
+
+        $parsed = $particle->parse_with( $this );
+
+        if( ! $parsed ) {
+            $this->on_unexpected_particle();
+            return;
+        }
+
+        $this->update_stream_position();
+    }
 
     /// Expressions
 
@@ -89,12 +123,25 @@ class Parser
         $this->context_frame->current_expression =
             $this->get_expression_named( $expression_name );
 
-        $this->context_frame->expected_particles =
-            $this->context_frame->current_expression->get_particles();
+        $this->context_frame->current_particles_sequences =
+            $this->context_frame->current_expression
+                ->get_particle_options()->collect( function ($particles_sequence) {
 
-        $this->context_frame->expected_particles->add(
-            Create::an( End_Of_Expression_Particle::class )->with()
-        );
+                $particles_sequence = clone $particles_sequence;
+
+                $particles_sequence->add(
+                    Create::an( End_Of_Expression_Particle::class )->with()
+                );
+
+                return $particles_sequence;
+
+            });
+
+        $this->context_frame->expected_particles =
+            $this->context_frame->current_particles_sequences->remove_first();
+
+        $this->context_frame->handler_params = [];
+        $this->context_frame->result = null;
     }
 
     protected function end_matched_expression()
@@ -109,54 +156,65 @@ class Parser
 
         $this->context_frame->handler_params[] = $current_context->result;
 
+        $this->parsing_error = null;
     }
 
-    /// Parsing
-
-    protected function do_parsing_loop()
+    protected function end_unmatched_expression()
     {
-        while( ! $this->at_eof() ) {
+        if( $this->frames_stack->is_empty() ) {
+            throw $this->parsing_error;
+        }
 
-            if( $this->context_frame->current_expression === null ) {
-                $this->raise_unexpected_expression_error();
+        $this->context_frame = $this->frames_stack->remove_last();
+
+        $this->on_unexpected_particle();
+    }
+
+    /// Particles
+
+    protected function is_last_particle_in_sequence()
+    {
+        return $this->context_frame->current_particles_sequences->is_empty();
+    }
+
+    protected function on_unexpected_particle()
+    {
+        if( $this->is_last_particle_in_sequence() ) {
+
+            if( $this->parsing_error === null ) {
+                $this->parsing_error = $this->new_unexpected_expression_error();
             }
 
-            $this->parse_current_expression();
-
+            $this->end_unmatched_expression();
+            
+            return; 
         }
+
+        $this->begin_next_particles_sequence();
     }
 
-    protected function parse_current_expression()
+    protected function begin_next_particles_sequence()
     {
+        $this->context_frame->expected_particles =
+            $this->context_frame->current_particles_sequences->remove_first();
+
+        $previous_context = $this->frames_stack->last();
+
+        $this->context_frame->char_index = $previous_context->char_index;
+        $this->context_frame->line_index = $previous_context->line_index;
+        $this->context_frame->column_index = $previous_context->column_index;
+
         $this->context_frame->handler_params = [];
-        $this->context_frame->result = null;
-
-        while( $this->context_frame->expected_particles->not_empty() )
-        {
-            $particle = $this->context_frame->expected_particles->remove_at( 0 );
-
-            $parsed = $this->parse_particle( $particle );
-
-            if( ! $parsed ) {
-                $this->raise_unexpected_expression_error();
-            }
-
-        }
-
     }
 
-    public function parse_particle($particle)
+    protected function end_particles_sequence()
     {
-        $this->context_frame->matched_length = 0;
-        $this->context_frame->matched_cr = false;
+        $handler_result = $this->context_frame->current_expression->get_handler_closure()
+            ->call( $this, ...$this->context_frame->handler_params );
 
-        $parsed = $particle->parse_with( $this );
+        $this->context_frame->result = $handler_result;
 
-        if( ! $parsed ) {
-            return false ;
-        }
-
-        $this->update_stream_position();
+        $this->end_matched_expression();
 
         return true;
     }
@@ -221,10 +279,45 @@ class Parser
         return true;
     }
 
+    public function parse_literal($regex_particle)
+    {
+        $literal_string = $regex_particle->get_literal_string();
+        $literal_string_length = strlen( $literal_string );
+
+        if( $this->context_frame->char_index + $literal_string_length
+            >
+            $this->string_length
+          )
+        {
+            return false;
+        }
+
+        if( substr_compare(
+                $this->string,
+                $literal_string,
+                $this->context_frame->char_index,
+                $literal_string_length
+            )
+            !=
+            0
+          )
+        {
+            return false;
+        }
+
+        $this->context_frame->matched_length = $literal_string_length;
+
+        if( $literal_string[ $literal_string_length - 1 ] == "\n" ) {
+
+            $this->context_frame->matched_cr = true;
+
+        }
+
+        return true;
+    }
+
     public function parse_expression($expression_particle)
     {
-        $n = $expression_particle->get_expression_name();
-
         $this->begin_expression( $expression_particle->get_expression_name() );
 
         return true;
@@ -232,12 +325,7 @@ class Parser
 
     public function parse_end_of_expression($end_of_expression_particle)
     {
-        $handler_result = $this->context_frame->current_expression->get_handler_closure()
-            ->call( $this, ...$this->context_frame->handler_params );
-
-        $this->context_frame->result = $handler_result;
-
-        $this->end_matched_expression();
+        $this->end_particles_sequence();
 
         return true;
     }
@@ -284,6 +372,11 @@ class Parser
 
     protected function raise_unexpected_expression_error()
     {
+        throw $this->new_unexpected_expression_error();
+    }
+
+    protected function new_unexpected_expression_error()
+    {
         $matches = [];
 
         preg_match(
@@ -294,6 +387,8 @@ class Parser
             $this->context_frame->char_index
         );
 
-        throw new UnexpectedExpressionError( "Unexpected expression \"{$matches[0]}\". At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}." );
+        return Create::an( UnexpectedExpressionError::class ) ->with(
+            "Unexpected expression \"{$matches[0]}\". At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+        );
     }
 }

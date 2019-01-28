@@ -16,8 +16,11 @@ class Expression
     public function __construct($name)
     {
         $this->name = $name;
-        $this->particles = Create::an( Ordered_Collection::class )->with();
         $this->handler_closure = null;
+        $this->particle_options = Create::an( Ordered_Collection::class )->with();
+        $this->particle_options->add(
+            Create::an( Ordered_Collection::class )->with()
+        );
     }
 
     /// Accessing
@@ -27,9 +30,9 @@ class Expression
         return $this->name;
     }
 
-    public function get_particles()
+    public function get_particle_options()
     {
-        return $this->particles;
+        return clone $this->particle_options;
     }
 
     public function get_handler_closure()
@@ -46,23 +49,47 @@ class Expression
 
     public function m_regex($regex_string)
     {
-        $this->particles->add(
+        $this->add_particle(
             Create::a( Multiple_Regex_Particle::class )->with( $regex_string )
         );
+
+        return $this;
     }
 
     public function regex($regex_string)
     {
-        $this->particles->add(
+        $this->add_particle(
             Create::a( Regex_Particle::class )->with( $regex_string )
         );
+
+        return $this;
     }
 
     public function exp($expression_name)
     {
-        $this->particles->add(
+        $this->add_particle(
             Create::a( Expression_Particle::class )->with( $expression_name )
         );
+
+        return $this;
+    }
+
+    public function lit($literal_string)
+    {
+        $this->add_particle(
+            Create::a( Literal_Particle::class )->with( $literal_string )
+        );
+
+        return $this;
+    }
+
+    public function or()
+    {
+        $this->particle_options->add(
+            Create::an( Ordered_Collection::class )->with()
+        );
+
+        return $this;
     }
 
     public function handler($closure)
@@ -70,4 +97,8 @@ class Expression
         $this->handler_closure = $closure;
     }
 
+    protected function add_particle($particle)
+    {
+        $this->particle_options->last()->add( $particle );
+    }
 }

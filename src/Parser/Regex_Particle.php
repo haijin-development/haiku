@@ -28,4 +28,12 @@ class Regex_Particle
     {
         return $parser->parse_regex( $this );
     }
+
+    /// Printing
+
+    public function print_string()
+    {
+        return "regex('$this->regex_string')";
+    }
+
 }

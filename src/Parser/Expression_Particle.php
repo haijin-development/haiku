@@ -28,4 +28,12 @@ class Expression_Particle
     {
         return $parser->parse_expression( $this );
     }
+
+    /// Printing
+
+    public function print_string()
+    {
+        return "exp('$this->expression_name')";
+    }
+
 }

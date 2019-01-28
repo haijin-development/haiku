@@ -12,4 +12,12 @@ class End_Of_Expression_Particle
     {
         return $parser->parse_end_of_expression( $this );
     }
+
+    /// Printing
+
+    public function print_string()
+    {
+        return "eoe";
+    }
+
 }
