@@ -34,7 +34,7 @@ $parser->after_parsing( function() {
 });
 
 
-$parser->token( "cr", "/(\n)/A", function($cr) {
+$parser->expression( "cr", "/(\n)/A", function($cr) {
     $this->indentation = 0;
 });
 

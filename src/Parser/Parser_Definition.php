@@ -5,6 +5,7 @@ namespace Haijin\Haiku\Parser;
 use Haijin\Instantiator\Create;
 use Haijin\File_Path;
 use Haijin\Ordered_Collection;
+use Haijin\Dictionary;
 
 /*
  * Regex cheatsheet:
@@ -15,36 +16,37 @@ use Haijin\Ordered_Collection;
 
 class Parser_Definition
 {
-    protected $before_parsing_closure;
-    protected $after_parsing_closure;
-    protected $tokens;
+    protected $expressions;
 
     /// Initializing
 
     public function __construct()
     {
-        $this->before_parsing_closure = null;
-        $this->after_parsing_closure = null;
-
-        $this->tokens = Create::a( Ordered_Collection::class )->with();
+        $this->expressions = Create::a( Ordered_Collection::class )->with();
+        $this->expressions_by_name = Create::a( Dictionary::class )->with();
     }
 
 
     /// Accessing
 
-    public function get_before_parsing_closure()
+
+    public function get_expressions()
     {
-        return $this->before_parsing_closure;
+        return $this->expressions;
     }
 
-    public function get_after_parsing_closure()
+    public function get_expression_named( $expression_name )
     {
-        return $this->after_parsing_closure;
+        return $this->expressions_by_name[ $expression_name ];
     }
 
-    public function get_tokens()
+    public function get_expressions_in( $expressions_names )
     {
-        return $this->tokens;
+        return $expressions_names->collect( function($expression_name) {
+
+                return $this->get_expression_named( $expression_name );
+
+            }, $this );
     }
 
     /// Defining
@@ -84,9 +86,18 @@ class Parser_Definition
         $this->after_parsing_closure = $closure;
     }
 
-    public function token($name, $pattern, $closure)
+    public function expression($name, $definition_closure)
     {
-        $this->tokens[ $name ] = Create::a( Parser_Token::class )
-                                    ->with( $name, $pattern, $closure );
+        $expression = Create::an( Expression::class )->with( $name );
+
+        $definition_closure->call( $expression );
+
+        $this->add_expression( $expression );
+    }
+
+    protected function add_expression($expression)
+    {
+        $this->expressions[] = $expression;
+        $this->expressions_by_name[ $expression->get_name() ] = $expression;
     }
 }

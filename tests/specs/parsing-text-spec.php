@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->describe( "When parsing text", function() {
+$spec->xdescribe( "When parsing text", function() {
 
     $this->let( "parser", function() {
 

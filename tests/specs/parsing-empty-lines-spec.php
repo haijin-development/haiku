@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->describe( "When parsing empty lines", function() {
+$spec->xdescribe( "When parsing empty lines", function() {
 
     $this->let( "parser", function() {
 

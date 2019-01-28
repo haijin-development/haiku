@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->describe( "When parsing indentations", function() {
+$spec->xdescribe( "When parsing indentations", function() {
 
     $this->let( "parser", function() {
 

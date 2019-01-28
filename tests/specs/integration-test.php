@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->describe( "Integration test", function() {
+$spec->xdescribe( "Integration test", function() {
 
     $this->let( "parser", function() {
 
