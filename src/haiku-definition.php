@@ -13,6 +13,14 @@ use Haijin\Ordered_Collection;
  */
 
 
+$parser->before_parsing( function() {
+
+    $this->indentation = null;
+    $this->indentation_unit = null;
+    $this->indentation_char = null;
+
+});
+
 $parser->expression( "root",  function() {
 
     $this->matcher( function() {
@@ -49,6 +57,10 @@ $parser->expression( "lines-list",  function() {
 
     $this->handler( function($node, $nodes_list = null) {
 
+        if( $node === null ) {
+            return $nodes_list;
+        }
+
         $nodes = Create::an( Ordered_Collection::class )->with();
 
         if( $nodes_list === null ) {
@@ -66,13 +78,13 @@ $parser->expression( "lines-list",  function() {
 
             $nodes_list->each_do( function($each_node) use($node, $nodes) {
 
-                if( $node->indentation != $each_node->indentation ) {
-                    throw new \Exception( "Invalid indentation found" );
+                if( $node->indentation < $each_node->indentation ) {
+                    $this->raise_unexpected_expression_error();
                 }
 
                 $nodes->add( $each_node );
 
-            });
+            }, $this );
 
             return $nodes;
 
@@ -132,13 +144,67 @@ $parser->expression( "lines-list",  function() {
 
 });
 
-$parser->expression( "line",  function() {
+$parser->expression( "line", function() {
+
+    $this->matcher( function() {
+
+        $this ->exp( "empty-line" )
+        ->or()
+        ->exp( "tag-line" )
+        ->or()
+        ->exp( "text-line" );
+
+    });
+
+    $this->handler( function($node) {
+
+        return $node;
+
+    });
+
+});
+
+$parser->expression( "empty-line", function() {
+
+    $this->matcher( function() {
+
+        $this ->lit( "\n" )
+        ->or()
+        ->regex("/(?: |\t)+\n/");
+
+    });
+
+    $this->handler( function() {
+    });
+
+});
+
+$parser->expression( "tag-line",  function() {
 
     $this->matcher( function() {
 
         $this ->exp( "indentation" ) ->exp( "tag" ) ->lit( "\n")
         ->or()
         ->exp( "indentation" ) ->exp( "tag" );
+
+    });
+
+    $this->handler( function($indentation, $tag_node) {
+
+        $tag_node->indentation = $indentation;
+
+        return $tag_node;
+    });
+
+});
+
+$parser->expression( "text-line",  function() {
+
+    $this->matcher( function() {
+
+        $this ->exp( "indentation" ) ->exp( "text" ) ->lit( "\n")
+        ->or()
+        ->exp( "indentation" ) ->exp( "text" );
 
     });
 
@@ -212,5 +278,64 @@ $parser->expression( "tag",  function() {
         return Create::a( Haiku_Tag::class )->with( $tag_string );
 
     });
+
+});
+
+$parser->expression( "text",  function() {
+
+    $this->matcher( function() {
+
+        $this-> regex( "/=(.+)(?=\n)/" );
+
+    });
+
+    $this->handler( function($text) {
+
+        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ) );
+
+    });
+
+});
+
+
+/// Custom methods
+
+$parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $unit) {
+
+    if( $this->indentation_char == "\t" ) {
+        $char = "tabs";
+    } else {
+        $char = "spaces";
+    };
+
+    throw Create::an( UnmatchedIndentationError::class )->with(
+            "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+        );
+
+});
+
+$parser->def( "raise_not_unique_indentation_char_error",  function() {
+
+    throw Create::an( NotUniqueIndentationCharError::class )->with(
+            "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+    );
+
+});
+
+$parser->def( "raise_indentation_char_missmatch_error",  function($used_chars, $missmatched_chars) {
+
+    throw Create::an( IndentationCharMissmatchError::class )->with(
+            "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+    );
+
+});
+
+$parser->def( "raise_invalid_indentation_increment_error",  function() {
+
+    $line_index = $this->context_frame->line_index - 1;
+
+    throw Create::an( InvalidIndentationIncrementError::class )->with(
+            "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->context_frame->column_index}."
+    );
 
 });

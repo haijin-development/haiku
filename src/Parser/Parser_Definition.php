@@ -16,19 +16,29 @@ use Haijin\Dictionary;
 
 class Parser_Definition
 {
+    protected $before_parsing_closure;
     protected $expressions;
+    protected $methods;
 
     /// Initializing
 
     public function __construct()
     {
+        $this->before_parsing_closure = null;
+
         $this->expressions = Create::a( Ordered_Collection::class )->with();
         $this->expressions_by_name = Create::a( Dictionary::class )->with();
+
+        $this->methods = Create::a( Dictionary::class )->with();
     }
 
 
     /// Accessing
 
+    public function get_before_parsing_closure()
+    {
+        return $this->before_parsing_closure;
+    }
 
     public function get_expressions()
     {
@@ -47,6 +57,11 @@ class Parser_Definition
                 return $this->get_expression_named( $expression_name );
 
             }, $this );
+    }
+
+    public function custom_method_at($method_name, $absent_closure = null, $binding = null )
+    {
+        return $this->methods->at_if_absent( $method_name, $absent_closure, $binding );
     }
 
     /// Defining
@@ -81,11 +96,6 @@ class Parser_Definition
         $this->before_parsing_closure = $closure;
     }
 
-    public function after_parsing($closure)
-    {
-        $this->after_parsing_closure = $closure;
-    }
-
     public function expression($name, $definition_closure)
     {
         $expression = Create::an( Expression::class )->with( $name );
@@ -100,4 +110,10 @@ class Parser_Definition
         $this->expressions[] = $expression;
         $this->expressions_by_name[ $expression->get_name() ] = $expression;
     }
+
+    protected function def( $method_name, $closure)
+    {
+        $this->methods[ $method_name ] = $closure;
+    }
+
 }

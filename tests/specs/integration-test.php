@@ -1,12 +1,13 @@
 <?php
 
-use Haijin\Haiku\Haiku_Parser;
+use Haijin\Haiku\Parser\Parser;
+use Haijin\Haiku\Haiku_Parser_Definition;
 
-$spec->xdescribe( "Integration test", function() {
+$spec->describe( "Integration test", function() {
 
     $this->let( "parser", function() {
 
-        return new Haiku_Parser();
+        return new Parser( Haiku_Parser_Definition::$definition );
 
     });
 

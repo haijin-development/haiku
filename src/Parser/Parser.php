@@ -68,6 +68,11 @@ class Parser
         $this->context_frame->line_index = 1;
         $this->context_frame->column_index = 1;
 
+        if( $this->parser_definition->get_before_parsing_closure() !== null ) {
+            $this->parser_definition->get_before_parsing_closure()->call( $this );
+        }
+
+
         $this->begin_expression( "root" );
 
         $this->do_parsing_loop();
@@ -373,6 +378,19 @@ class Parser
         $this->context_frame->column_index += $n;
     }
 
+    /// Custom methods
+
+    public function __call($method_name, $params )
+    {
+        $closure = $this->parser_definition->custom_method_at( $method_name, function() use($method_name) {
+
+            $this->raise_undefined_method_error( $method_name );
+
+        }, $this );
+
+        return $closure->call( $this, ...$params );
+    }
+
     /// Raising errors
 
     protected function raise_unexpected_expression_error()
@@ -394,6 +412,15 @@ class Parser
 
         return Create::an( UnexpectedExpressionError::class ) ->with(
             "Unexpected expression \"{$matches[0]}\". At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+        );
+    }
+
+    protected function raise_undefined_method_error($method_name)
+    {
+        throw Create::an( \Haijin\Haiku\UndefinedMethodError::class ) ->with(
+            "The method \"{$method_name}\" is not defined in this parser.",
+            $method_name,
+            $this
         );
     }
 }

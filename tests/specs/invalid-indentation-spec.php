@@ -1,12 +1,13 @@
 <?php
 
-use Haijin\Haiku\Haiku_Parser;
+use Haijin\Haiku\Parser\Parser;
+use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing indentations", function() {
 
     $this->let( "parser", function() {
 
-        return new Haiku_Parser();
+        return new Parser( Haiku_Parser_Definition::$definition );
 
     });
 
@@ -93,7 +94,7 @@ $spec->describe( "When parsing indentations", function() {
 
     });
 
-    $this->xdescribe( "that are greater than the previous unit + 1", function() {
+    $this->describe( "that are greater than the previous unit + 1", function() {
 
         $this->let( "haiku", function() {
             return
