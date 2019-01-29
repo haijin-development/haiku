@@ -12,90 +12,205 @@ use Haijin\Ordered_Collection;
  *      lookahead negation: (?!)
  */
 
-$parser->before_parsing( function() {
 
-    $this->indentation_char = null;
-    $this->indentation_unit = null;
-    $this->previous_indentation = 0;
-    $this->indentation = 0;
+$parser->expression( "root",  function() {
 
-    $this->nodes = Create::an( Ordered_Collection::class )->with();
+    $this->matcher( function() {
 
-    $this->push_node(
-        Create::a( Haiku_Document::class )->with()
-    );
+        $this->exp( "lines-list" );
+
+    });
+
+    $this->handler( function($nodes_list) {
+
+        $document = Create::a( Haiku_Document::class )->with();
+
+        $nodes_list->each_do( function($node) use($document) {
+
+            $document->add_child( $node );
+
+        });
+
+        return $document->to_html();
+
+    });
 
 });
 
-$parser->after_parsing( function() {
+$parser->expression( "lines-list",  function() {
 
-    return $this->nodes[0]->to_html();
+    $this->matcher( function() {
+
+        $this ->exp( "line" ) ->exp( "lines-list" )
+        ->or()
+        ->exp( "line" );
+
+    });
+
+    $this->handler( function($node, $nodes_list = null) {
+
+        $nodes = Create::an( Ordered_Collection::class )->with();
+
+        if( $nodes_list === null ) {
+
+            $nodes->add( $node );
+
+            return $nodes;
+        }
+
+        $previous_line_node = $nodes_list->first();
+
+        if( $node->indentation == $previous_line_node->indentation ) {
+
+            $nodes->add( $node );
+
+            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+
+                if( $node->indentation != $each_node->indentation ) {
+                    throw new \Exception( "Invalid indentation found" );
+                }
+
+                $nodes->add( $each_node );
+
+            });
+
+            return $nodes;
+
+        }
+
+        if( $node->indentation < $previous_line_node->indentation ) {
+
+            $nodes->add( $node );
+
+            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+
+                if( $node->indentation < $each_node->indentation - 1 ) {
+                    $this->raise_invalid_indentation_increment_error();
+                }
+
+                if( $node->indentation == $each_node->indentation - 1 ) {
+                    $node->add_child( $each_node );
+                }
+
+                if( $node->indentation == $each_node->indentation ) {
+                    $nodes->add( $each_node );
+                }
+
+                if( $node->indentation > $each_node->indentation ) {
+                    throw new \Exception( "Invalid indentation found" );
+                }
+
+            }, $this );
+
+            return $nodes;
+
+        }
+
+        if( $node->indentation > $previous_line_node->indentation ) {
+
+            $nodes->add( $node );
+
+            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+
+                if( $node->indentation == $each_node->indentation ) {
+                    throw new \Exception( "Invalid indentation found" );
+                }
+
+                if( $node->indentation < $each_node->indentation ) {
+                    throw new \Exception( "Invalid indentation found" );
+                }
+
+                $nodes->add( $each_node );
+
+            });
+
+            return $nodes;
+
+        }
+
+    });
 
 });
 
+$parser->expression( "line",  function() {
 
-$parser->expression( "cr", "/(\n)/A", function($cr) {
-    $this->indentation = 0;
+    $this->matcher( function() {
+
+        $this ->exp( "indentation" ) ->exp( "tag" ) ->lit( "\n")
+        ->or()
+        ->exp( "indentation" ) ->exp( "tag" );
+
+    });
+
+    $this->handler( function($indentation, $tag_node) {
+
+        $tag_node->indentation = $indentation;
+
+        return $tag_node;
+    });
+
 });
 
+$parser->expression( "indentation",  function() {
 
-// Match spaces and tabs.
-$parser->token( "indentation", "/((?: |\t)+)(?! |\t)/A", function($spaces) {
+    $this->matcher( function() {
 
-    $spaces_count = strlen( $spaces );
+        $this-> regex( "/((?: |\t)*)(?! |\t)/" );
 
-    if( $this->indentation_unit === null && $spaces_count > 0 ) {
+    });
+
+    $this->handler( function($spaces) {
 
         if( preg_match( "/\t/", $spaces ) &&  preg_match( "/ /", $spaces ) ) {
             $this->raise_not_unique_indentation_char_error();
         }
 
-        $this->indentation_unit = $spaces_count;
-        $this->indentation_char = $spaces[ 0 ];
+        $spaces_count = strlen( $spaces );
 
-    }
+        if( $this->indentation_unit == null && $spaces_count > 0 ) {
 
-    if( $this->indentation_char == " " && preg_match( "/\t/", $spaces ) ) {
-        $this->raise_indentation_char_missmatch_error("spaces", "tabs");
-    }
-    if( $this->indentation_char == "\t" && preg_match( "/ /", $spaces ) ) {
-        $this->raise_indentation_char_missmatch_error("tabs", "spaces");
-    }
+            $this->indentation_unit = $spaces_count;
+            $this->indentation_char = $spaces[ 0 ];
 
-    if( $spaces_count > 0 && $spaces_count % $this->indentation_unit != 0 ) {
-        $this->raise_unmatched_indentation_error(
-            $spaces_count, $this->indentation_unit
-        );
-    }
+        }
 
-    $this->indentation = 0;
+        if( $this->indentation_char == " " && preg_match( "/\t/", $spaces ) ) {
+            $this->raise_indentation_char_missmatch_error("spaces", "tabs");
+        }
+        if( $this->indentation_char == "\t" && preg_match( "/ /", $spaces ) ) {
+            $this->raise_indentation_char_missmatch_error("tabs", "spaces");
+        }
 
-    if( $spaces_count > 0 ) {
-        $this->indentation = $spaces_count / $this->indentation_unit;
-    }
+        if( $spaces_count > 0 && $spaces_count % $this->indentation_unit != 0 ) {
+            $this->raise_unmatched_indentation_error(
+                $spaces_count, $this->indentation_unit
+            );
+        }
 
-    if( $this->indentation > $this->previous_indentation + 1 ) {
-        $this->raise_invalid_indentation_increment_error();
-    }
+        if( $spaces_count == 0 ) {
+            $indentation = 0;
+        } else {
+            $indentation = $spaces_count / $this->indentation_unit;
+        }
 
-});
+        return $indentation;
 
-// Match tag names.
-$parser->token( "tag", "/([0-9a-zA-z_\-]+)(?![0-9a-zA-z_\-])/A", function($tag) {
-
-    $tag_node = Create::a( Haiku_Tag::class )->with( $tag );
-
-    $this->adjust_nodes_to_indentation( $tag_node );
-
+    });
 
 });
 
-// Match '='' followed by a PHP expression.
-$parser->token( "text", "/=(.+)(?=\n)/A", function($expression) {
+$parser->expression( "tag",  function() {
 
-    $php_expression_node = Create::a( Haiku_PHP_Expression::class )
-        ->with( trim( $expression ) );
+    $this->matcher( function() {
 
-    $this->adjust_nodes_to_indentation( $php_expression_node );
+        $this-> regex( "([0-9a-zA-z_\-]+)" );
+
+    });
+
+    $this->handler( function($tag_string) {
+
+        return Create::a( Haiku_Tag::class )->with( $tag_string );
+
+    });
 
 });

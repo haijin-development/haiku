@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->xdescribe( "When parsing indentations", function() {
+$spec->describe( "When parsing indentations", function() {
 
     $this->let( "parser", function() {
 
@@ -30,7 +30,7 @@ $spec->xdescribe( "When parsing indentations", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
-                        ->equal( "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: 2 column: 1." );
+                        ->equal( "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: 2 column: 3." );
             });
 
         });
@@ -58,7 +58,7 @@ $spec->xdescribe( "When parsing indentations", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
-                        ->equal( "The template is indenting with spaces in one line and tabs in another one, use only tabs or only spaces in all lines. At line: 3 column: 1." );
+                        ->equal( "The template is indenting with spaces in one line and tabs in another one, use only tabs or only spaces in all lines. At line: 3 column: 2." );
             });
 
         });
@@ -86,14 +86,14 @@ $spec->xdescribe( "When parsing indentations", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
-                        ->equal( "The template is using indentation units of 4 spaces, but a line with 6 spaces was found. At line: 3 column: 1." );
+                        ->equal( "The template is using indentation units of 4 spaces, but a line with 6 spaces was found. At line: 3 column: 7." );
             });
 
         });
 
     });
 
-    $this->describe( "that are greater than the previous unit + 1", function() {
+    $this->xdescribe( "that are greater than the previous unit + 1", function() {
 
         $this->let( "haiku", function() {
             return

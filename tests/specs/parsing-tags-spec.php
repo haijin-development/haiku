@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Haiku_Parser;
 
-$spec->xdescribe( "When parsing tags", function() {
+$spec->describe( "When parsing tags", function() {
 
     $this->let( "parser", function() {
 
@@ -16,8 +16,7 @@ $spec->xdescribe( "When parsing tags", function() {
             return
 "div
 a
-p
-";
+p";
         });
 
         $this->let( "expected_html", function() {

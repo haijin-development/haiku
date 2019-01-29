@@ -239,9 +239,14 @@ class Parser
 
         $this->context_frame->matched_length = strlen( $matches[ 0 ] );
 
-        $this->context_frame->handler_params[] = $matches[ 1 ];
+        $this->context_frame->handler_params[] = isset( $matches[ 1 ] ) ?
+            $matches[ 1 ] : $matches[ 0 ];
 
-        if( $matches[ 0 ][ $this->context_frame->matched_length - 1 ] == "\n" ) {
+        if( $this->context_frame->matched_length > 0
+            &&
+            $matches[ 0 ][ $this->context_frame->matched_length - 1 ] == "\n"
+          )
+        {
 
             $this->context_frame->matched_cr = true;
 
