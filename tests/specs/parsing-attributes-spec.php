@@ -3,7 +3,7 @@
 use Haijin\Haiku\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
-$spec->xdescribe( "When parsing tags attributes", function() {
+$spec->describe( "When parsing tags attributes", function() {
 
     $this->let( "parser", function() {
 

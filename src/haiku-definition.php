@@ -21,6 +21,8 @@ $parser->before_parsing( function() {
 
 });
 
+/// Root
+
 $parser->expression( "root",  function() {
 
     $this->matcher( function() {
@@ -44,6 +46,9 @@ $parser->expression( "root",  function() {
     });
 
 });
+
+
+/// Lines
 
 $parser->expression( "lines-list",  function() {
 
@@ -217,6 +222,8 @@ $parser->expression( "text-line",  function() {
 
 });
 
+/// Indentation
+
 $parser->expression( "indentation",  function() {
 
     $this->matcher( function() {
@@ -265,21 +272,90 @@ $parser->expression( "indentation",  function() {
 
 });
 
+/// Tags
+
 $parser->expression( "tag",  function() {
 
     $this->matcher( function() {
 
-        $this-> regex( "([0-9a-zA-z_\-]+)" );
+        $this ->regex( "([0-9a-zA-z_\-]+)" ) ->exp( "tag-attributes" )
+        ->or()
+        ->regex( "([0-9a-zA-z_\-]+)" );
 
     });
 
-    $this->handler( function($tag_string) {
+    $this->handler( function($tag_string, $attributes = []) {
 
-        return Create::a( Haiku_Tag::class )->with( $tag_string );
+        $tag_node = Create::a( Haiku_Tag::class )->with( $tag_string );
+
+        foreach( $attributes as $each_attribute ) {
+            $tag_node->set_attribute( $each_attribute[ 0 ], $each_attribute[ 1 ] );
+        }
+
+        return $tag_node;
+    });
+
+});
+
+$parser->expression( "tag-attributes",  function() {
+
+    $this->matcher( function() {
+
+        $this ->lit( "{ " )
+
+        ->exp( "attributes-list" )
+
+        ->lit( " }" );
+
+    });
+
+    $this->handler( function($attributes) {
+
+        return $attributes;
 
     });
 
 });
+
+$parser->expression( "attributes-list",  function() {
+
+    $this->matcher( function() {
+
+        $this ->exp( "attribute" )
+        ->or()
+        ->exp( "attribute" ) ->lit( ", " ) ->exp( "attributes-list" );
+
+    });
+
+    $this->handler( function($attribute, $attribute_list = null) {
+
+        if( $attribute_list === null ) {
+            return [ $attribute ];
+        }
+
+        return array_merge( [ $attribute ], $attribute_list );
+
+    });
+
+});
+
+$parser->expression( "attribute",  function() {
+
+    $this->matcher( function() {
+
+        $this ->m_regex( "/([0-9a-zA-z_\-]+): ([0-9a-zA-z_\-]+)(?!,|\})/" );
+
+    });
+
+    $this->handler( function($matches) {
+
+        return $matches;
+
+    });
+
+});
+
+/// Text
 
 $parser->expression( "text",  function() {
 
