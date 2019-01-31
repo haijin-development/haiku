@@ -174,7 +174,7 @@ $parser->expression( "empty-line",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/((?: |\t)*)/" );
+        $this ->space();
 
     });
 
