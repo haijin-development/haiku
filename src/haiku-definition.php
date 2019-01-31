@@ -274,9 +274,9 @@ $parser->expression( "tag",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "([0-9a-zA-z_\-]+)" ) ->space() ->exp( "tag-attributes" )
+        $this ->exp( "tag-name" ) ->str( " " ) ->space() ->exp( "tag-attributes-list" )
         ->or()
-        ->regex( "([0-9a-zA-z_\-]+)" );
+        ->exp( "tag-name" );
 
     });
 
@@ -293,29 +293,29 @@ $parser->expression( "tag",  function() {
 
 });
 
-$parser->expression( "tag-attributes",  function() {
+$parser->expression( "tag-name",  function() {
 
     $this->matcher( function() {
 
-        $this ->str( "{ " ) ->exp( "attributes-list" ) ->str( " }" );
+        $this ->regex( "([0-9a-zA-z_\-]+)" );
 
     });
 
-    $this->handler( function($attributes) {
+    $this->handler( function($tag_string) {
 
-        return $attributes;
+        return $tag_string;
 
     });
 
 });
 
-$parser->expression( "attributes-list",  function() {
+$parser->expression( "tag-attributes-list",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "attribute" )
+        $this ->exp( "attribute" ) ->space() ->str( "," ) ->blank() ->exp( "tag-attributes-list" )
         ->or()
-        ->exp( "attribute" ) ->str( ", " ) ->exp( "attributes-list" );
+        ->exp( "attribute" );
 
     });
 
@@ -335,7 +335,41 @@ $parser->expression( "attribute",  function() {
 
     $this->matcher( function() {
 
-        $this ->m_regex( "/([0-9a-zA-z_\-]+): ([0-9a-zA-z_\-]+)(?!,|\})/" );
+        $this ->exp( "attribute-name" )  ->space()
+        ->str( "=" ) ->space()
+        ->exp( "attribute-value" );
+
+    });
+
+    $this->handler( function($name, $value) {
+
+        return [ $name, $value ];
+
+    });
+
+});
+
+$parser->expression( "attribute-name",  function() {
+
+    $this->matcher( function() {
+
+        $this ->regex( "([0-9a-zA-z_\-]+)" );
+
+    });
+
+    $this->handler( function($matches) {
+
+        return $matches;
+
+    });
+
+});
+
+$parser->expression( "attribute-value",  function() {
+
+    $this->matcher( function() {
+
+        $this ->str('"') ->regex( "([0-9a-zA-z_\-]+)" ) ->str('"');
 
     });
 

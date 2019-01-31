@@ -46,13 +46,13 @@ Example of a haiku template:
 html
     head
     body.container
-        div#haiku.poem { data-id: 1 }
+        div#haiku.poem data-id= "1"
             = "Entrar al ciruelo"
             br
             = "en base a ternura"
             br
             = "en base a olfato."
-        div.source { data-id: 1, data-author: Alberto Silva }
+        div.source data-id= "1", data-author= "Alberto Silva"
             = "Traducción de Alberto Silva - El libro del haiku"
 ```
 <a name="c-3"></a>
