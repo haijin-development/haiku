@@ -15,7 +15,6 @@ use Haijin\Ordered_Collection;
 
 $parser->before_parsing( function() {
 
-    $this->indentation = null;
     $this->indentation_unit = null;
     $this->indentation_char = null;
 
@@ -54,7 +53,9 @@ $parser->expression( "lines-list",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "line" ) ->exp( "lines-list" )
+        $this ->exp( "line" ) ->cr() ->exp( "lines-list" )
+        ->or()
+        ->exp( "line" ) ->cr()
         ->or()
         ->exp( "line" );
 
@@ -153,11 +154,11 @@ $parser->expression( "line", function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "empty-line" )
+        $this ->exp( "tag-line" )
         ->or()
-        ->exp( "tag-line" )
+        ->exp( "text-line" )
         ->or()
-        ->exp( "text-line" );
+        ->exp( "empty-line" );
 
     });
 
@@ -169,17 +170,16 @@ $parser->expression( "line", function() {
 
 });
 
-$parser->expression( "empty-line", function() {
+$parser->expression( "empty-line",  function() {
 
     $this->matcher( function() {
 
-        $this ->lit( "\n" )
-        ->or()
-        ->regex("/(?: |\t)+\n/");
+        $this ->regex( "/((?: |\t)*)/" );
 
     });
 
     $this->handler( function() {
+        return null;
     });
 
 });
@@ -188,9 +188,7 @@ $parser->expression( "tag-line",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "indentation" ) ->exp( "tag" ) ->lit( "\n")
-        ->or()
-        ->exp( "indentation" ) ->exp( "tag" );
+        $this ->exp( "indentation" ) ->exp( "tag" );
 
     });
 
@@ -207,9 +205,7 @@ $parser->expression( "text-line",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "indentation" ) ->exp( "text" ) ->lit( "\n")
-        ->or()
-        ->exp( "indentation" ) ->exp( "text" );
+        $this ->exp( "indentation" ) ->exp( "text" );
 
     });
 
@@ -278,7 +274,7 @@ $parser->expression( "tag",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "([0-9a-zA-z_\-]+)" ) ->exp( "tag-attributes" )
+        $this ->regex( "([0-9a-zA-z_\-]+)" ) ->space() ->exp( "tag-attributes" )
         ->or()
         ->regex( "([0-9a-zA-z_\-]+)" );
 
@@ -301,11 +297,7 @@ $parser->expression( "tag-attributes",  function() {
 
     $this->matcher( function() {
 
-        $this ->lit( "{ " )
-
-        ->exp( "attributes-list" )
-
-        ->lit( " }" );
+        $this ->str( "{ " ) ->exp( "attributes-list" ) ->str( " }" );
 
     });
 
@@ -323,7 +315,7 @@ $parser->expression( "attributes-list",  function() {
 
         $this ->exp( "attribute" )
         ->or()
-        ->exp( "attribute" ) ->lit( ", " ) ->exp( "attributes-list" );
+        ->exp( "attribute" ) ->str( ", " ) ->exp( "attributes-list" );
 
     });
 

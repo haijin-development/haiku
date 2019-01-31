@@ -1,6 +1,6 @@
 <?php
 
-use Haijin\Haiku\Parser\Parser;
+use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing indentations", function() {

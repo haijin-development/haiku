@@ -1,6 +1,6 @@
 <?php
 
-use Haijin\Haiku\Parser\Parser;
+use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing tags attributes", function() {
@@ -11,7 +11,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses a single attribute", function() {
+    $this->describe( "parses a single attribute with no spaces", function() {
 
         $this->let( "haiku", function() {
             return

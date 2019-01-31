@@ -3,7 +3,7 @@
 namespace Haijin\Haiku;
 
 use Haijin\Instantiator\Create;
-use Haijin\Haiku\Parser\Parser_Definition;
+use Haijin\Parser\Parser_Definition;
 
 class Haiku_Parser_Definition
 {

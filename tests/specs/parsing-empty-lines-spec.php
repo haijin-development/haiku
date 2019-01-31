@@ -1,6 +1,6 @@
 <?php
 
-use Haijin\Haiku\Parser\Parser;
+use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing empty lines", function() {
@@ -17,6 +17,33 @@ $spec->describe( "When parsing empty lines", function() {
             return
 "div
 
+p";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+</div>
+<p>
+</p>
+";
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "with just a cr at the end of stream", function() {
+
+        $this->let( "haiku", function() {
+            return
+"div
 p
 ";
         });
@@ -46,8 +73,35 @@ p
             return
 "div
     
-p
+p";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+</div>
+<p>
+</p>
 ";
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "with spaces at the end of the stream", function() {
+
+        $this->let( "haiku", function() {
+            return
+"div
+p
+   ";
         });
 
         $this->let( "expected_html", function() {
@@ -75,8 +129,35 @@ p
             return
 "div
 \t\t\t
-p
+p";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+</div>
+<p>
+</p>
 ";
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "with tabs at the end of the stream", function() {
+
+        $this->let( "haiku", function() {
+            return
+"div
+p
+\t\t\t";
         });
 
         $this->let( "expected_html", function() {
@@ -106,8 +187,7 @@ p
 
     p
 
-        a
-";
+        a";
         });
 
         $this->let( "expected_html", function() {

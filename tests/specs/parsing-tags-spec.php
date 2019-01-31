@@ -1,6 +1,6 @@
 <?php
 
-use Haijin\Haiku\Parser\Parser;
+use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing tags", function() {
@@ -47,8 +47,7 @@ p";
             return
 "div
     p
-        a
-";
+        a";
         });
 
         $this->let( "expected_html", function() {
@@ -80,8 +79,7 @@ p";
     p
         a
     p
-        a
-";
+        a";
         });
 
         $this->let( "expected_html", function() {
