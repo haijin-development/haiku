@@ -20,16 +20,10 @@
             "php": "7.1"
         }
     },
-    "repositories": {
-        "haijin/parser": {
-            "type": "vcs",
-            "url": "https://github.com/haijin-development/php-parser"
-        }
-    },
     "require": {
         "haijin/tools": "^1.0",
         "haijin/instantiator": "^1.0",
-        "haijin/parser": "dev-master"
+        "haijin/parser": "^0.0.3"
     },
     "require-dev": {
         "haijin/specs": "^1.0"

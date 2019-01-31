@@ -48,7 +48,9 @@ class Haiku_Tag extends Haiku_Node
 
         foreach( $this->attributes->to_array() as $name => $value ) {
 
-            $strings[] = \htmlspecialchars( $name ) . "=" .
+            $strings[] =
+                \htmlspecialchars( $name )
+                . "=" .
                 '"' . \htmlspecialchars( $value ) . '"';
 
         }

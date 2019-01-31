@@ -297,7 +297,7 @@ $parser->expression( "tag-name",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "([0-9a-zA-z_\-]+)" );
+        $this ->regex( "/([0-9a-zA-z_\-]+)/" );
 
     });
 
@@ -335,8 +335,8 @@ $parser->expression( "attribute",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "attribute-name" )  ->space()
-        ->str( "=" ) ->space()
+        $this ->exp( "attribute-name" )
+            ->space() ->str( "=" ) ->space()
         ->exp( "attribute-value" );
 
     });
@@ -353,7 +353,7 @@ $parser->expression( "attribute-name",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "([0-9a-zA-z_\-]+)" );
+        $this ->regex( "/([0-9a-zA-z_\-]+)/" );
 
     });
 
@@ -369,7 +369,7 @@ $parser->expression( "attribute-value",  function() {
 
     $this->matcher( function() {
 
-        $this ->str('"') ->regex( "([0-9a-zA-z_\-]+)" ) ->str('"');
+        $this ->str('"') ->regex( "/([^\"]*)(?=\\\")/U" ) ->str('"');
 
     });
 

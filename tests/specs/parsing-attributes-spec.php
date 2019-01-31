@@ -137,4 +137,54 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
+    $this->describe( "parses attribute value with many chars", function() {
+
+        $this->let( "haiku", function() {
+            return
+'div id = "12.3 \'abc\' @()"
+';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div id="12.3 \'abc\' @()">
+</div>
+';
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "escapes html tags in attribute value", function() {
+
+        $this->let( "haiku", function() {
+            return
+'div id = "<>"
+';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div id="&lt;&gt;">
+</div>
+';
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 });
