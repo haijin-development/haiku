@@ -26,7 +26,7 @@ $parser->expression( "root",  function() {
 
     $this->matcher( function() {
 
-        $this->exp( "lines-list" );
+        $this->lines_list();
 
     });
 
@@ -49,15 +49,15 @@ $parser->expression( "root",  function() {
 
 /// Lines
 
-$parser->expression( "lines-list",  function() {
+$parser->expression( "lines_list",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "line" ) ->cr() ->exp( "lines-list" )
+        $this ->line() ->cr() ->lines_list()
         ->or()
-        ->exp( "line" ) ->cr()
+        ->line() ->cr()
         ->or()
-        ->exp( "line" );
+        ->line();
 
     });
 
@@ -154,11 +154,11 @@ $parser->expression( "line", function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "tag-line" )
+        $this ->tag_line()
         ->or()
-        ->exp( "text-line" )
+        ->text_line()
         ->or()
-        ->exp( "empty-line" );
+        ->empty_line();
 
     });
 
@@ -170,7 +170,7 @@ $parser->expression( "line", function() {
 
 });
 
-$parser->expression( "empty-line",  function() {
+$parser->expression( "empty_line",  function() {
 
     $this->matcher( function() {
 
@@ -184,11 +184,11 @@ $parser->expression( "empty-line",  function() {
 
 });
 
-$parser->expression( "tag-line",  function() {
+$parser->expression( "tag_line",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "indentation" ) ->exp( "tag" );
+        $this ->indentation() ->tag();
 
     });
 
@@ -201,11 +201,11 @@ $parser->expression( "tag-line",  function() {
 
 });
 
-$parser->expression( "text-line",  function() {
+$parser->expression( "text_line",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "indentation" ) ->exp( "text" );
+        $this ->indentation() ->text();
 
     });
 
@@ -274,9 +274,9 @@ $parser->expression( "tag",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "tag-name" ) ->str( " " ) ->space() ->exp( "tag-attributes-list" )
+        $this ->tag_name() ->str( " " ) ->space() ->tag_attributes_list()
         ->or()
-        ->exp( "tag-name" );
+        ->tag_name();
 
     });
 
@@ -293,7 +293,7 @@ $parser->expression( "tag",  function() {
 
 });
 
-$parser->expression( "tag-name",  function() {
+$parser->expression( "tag_name",  function() {
 
     $this->matcher( function() {
 
@@ -309,13 +309,13 @@ $parser->expression( "tag-name",  function() {
 
 });
 
-$parser->expression( "tag-attributes-list",  function() {
+$parser->expression( "tag_attributes_list",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "attribute" ) ->space() ->str( "," ) ->blank() ->exp( "tag-attributes-list" )
+        $this ->attribute() ->space() ->str( "," ) ->blank() ->tag_attributes_list()
         ->or()
-        ->exp( "attribute" );
+        ->attribute();
 
     });
 
@@ -335,9 +335,9 @@ $parser->expression( "attribute",  function() {
 
     $this->matcher( function() {
 
-        $this ->exp( "attribute-name" )
-            ->space() ->str( "=" ) ->space()
-        ->exp( "attribute-value" );
+        $this ->attribute_name()
+        ->space() ->str( "=" ) ->space()
+        ->attribute_value();
 
     });
 
@@ -349,7 +349,7 @@ $parser->expression( "attribute",  function() {
 
 });
 
-$parser->expression( "attribute-name",  function() {
+$parser->expression( "attribute_name",  function() {
 
     $this->matcher( function() {
 
@@ -357,25 +357,25 @@ $parser->expression( "attribute-name",  function() {
 
     });
 
-    $this->handler( function($matches) {
+    $this->handler( function($name) {
 
-        return $matches;
+        return $name;
 
     });
 
 });
 
-$parser->expression( "attribute-value",  function() {
+$parser->expression( "attribute_value",  function() {
 
     $this->matcher( function() {
 
-        $this ->str('"') ->regex( "/([^\"]*)(?=\\\")/U" ) ->str('"');
+        $this ->string_literal();
 
     });
 
-    $this->handler( function($matches) {
+    $this->handler( function($value) {
 
-        return $matches;
+        return $value;
 
     });
 
@@ -399,6 +399,57 @@ $parser->expression( "text",  function() {
 
 });
 
+/// Literals
+
+$parser->expression( "string_literal",  function() {
+
+    $this->processor( function() {
+
+        $char = $this->next_char();
+
+        if( $char != '"' ) {
+            return false;
+        }
+
+        $literal = "";
+        $scaping_next = false;
+
+        while( $this->not_end_of_stream() ) {
+
+            $char = $this->next_char();
+
+            if( $scaping_next === true ) {
+                $literal .= $char;
+
+                $scaping_next = false;
+                continue;
+            }
+
+            if( $char == '\\' ) {
+                $scaping_next = true;
+                continue;
+            }
+
+            if( $char == '"' ) {
+                break;
+            }
+
+            $literal .= $char;
+        }
+
+        $this->set_result( $literal );
+
+        return true;
+
+    });
+
+    $this->handler( function($string) {
+
+        return $string;
+
+    });
+
+});
 
 /// Custom methods
 
@@ -411,7 +462,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
     };
 
     throw Create::an( UnmatchedIndentationError::class )->with(
-            "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+            "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->current_line()} column: {$this->current_column()}."
         );
 
 });
@@ -419,7 +470,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
 $parser->def( "raise_not_unique_indentation_char_error",  function() {
 
     throw Create::an( NotUniqueIndentationCharError::class )->with(
-            "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+            "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
 });
@@ -427,17 +478,17 @@ $parser->def( "raise_not_unique_indentation_char_error",  function() {
 $parser->def( "raise_indentation_char_missmatch_error",  function($used_chars, $missmatched_chars) {
 
     throw Create::an( IndentationCharMissmatchError::class )->with(
-            "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->context_frame->line_index} column: {$this->context_frame->column_index}."
+            "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
 });
 
 $parser->def( "raise_invalid_indentation_increment_error",  function() {
 
-    $line_index = $this->context_frame->line_index - 1;
+    $line_index = $this->current_line() - 1;
 
     throw Create::an( InvalidIndentationIncrementError::class )->with(
-            "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->context_frame->column_index}."
+            "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->current_column()}."
     );
 
 });

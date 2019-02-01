@@ -162,17 +162,42 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "escapes html tags in attribute value", function() {
+    $this->describe( "parses attribute value with double quotes", function() {
 
         $this->let( "haiku", function() {
             return
-'div id = "<>"
+'div id = "123\"321"
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="&lt;&gt;">
+'<div id="123&quot;321">
+</div>
+';
+        });
+
+        $this->it( "parses the haiku", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "escapes html tags in attribute value", function() {
+
+        $this->let( "haiku", function() {
+            return
+'div id = "<>\""
+';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div id="&lt;&gt;&quot;">
 </div>
 ';
         });

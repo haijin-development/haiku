@@ -23,7 +23,7 @@
     "require": {
         "haijin/tools": "^1.0",
         "haijin/instantiator": "^1.0",
-        "haijin/parser": "^0.0.3"
+        "haijin/parser": "^0.1.0"
     },
     "require-dev": {
         "haijin/specs": "^1.0"
