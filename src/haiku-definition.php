@@ -53,9 +53,10 @@ $parser->expression( "lines_list",  function() {
 
     $this->matcher( function() {
 
-        $this ->line() ->cr() ->lines_list()
-        ->or()
-        ->line() ->eol();
+        $this
+            ->line() ->cr() ->lines_list()
+            ->or()
+            ->line() ->eol();
 
     });
 
@@ -152,66 +153,38 @@ $parser->expression( "line", function() {
 
     $this->matcher( function() {
 
-        $this ->tag_line()
-        ->or()
-        ->text_line()
-        ->or()
-        ->empty_line();
+        $this ->indentation() ->opt( $this->statement() );
+
 
     });
 
-    $this->handler( function($node) {
+    $this->handler( function($indentation, $tag_node = null) {
 
-        return $node;
-
-    });
-
-});
-
-$parser->expression( "empty_line",  function() {
-
-    $this->matcher( function() {
-
-        $this ->space();
-
-    });
-
-    $this->handler( function() {
-        return null;
-    });
-
-});
-
-$parser->expression( "tag_line",  function() {
-
-    $this->matcher( function() {
-
-        $this ->indentation() ->tag();
-
-    });
-
-    $this->handler( function($indentation, $tag_node) {
-
-        $tag_node->indentation = $indentation;
+        if( $tag_node !== null ) {
+            $tag_node->indentation = $indentation;
+        }
 
         return $tag_node;
+
     });
 
 });
 
-$parser->expression( "text_line",  function() {
+$parser->expression( "statement",  function() {
 
     $this->matcher( function() {
 
-        $this ->indentation() ->text();
+        $this
+            ->tag()
+            ->or()
+            ->text();
 
     });
 
-    $this->handler( function($indentation, $tag_node) {
-
-        $tag_node->indentation = $indentation;
+    $this->handler( function($tag_node = null) {
 
         return $tag_node;
+
     });
 
 });
@@ -272,18 +245,56 @@ $parser->expression( "tag",  function() {
 
     $this->matcher( function() {
 
-        $this ->tag_name() ->str( " " ) ->space() ->tag_attributes_list()
-        ->or()
-        ->tag_name();
+        $this
+            ->explicit_tag()
+            ->or()
+            ->implicit_div();
 
     });
 
-    $this->handler( function($tag_string, $attributes = []) {
+    $this->handler( function($tag_node) {
+        return $tag_node;
+    });
 
-        $tag_node = Create::a( Haiku_Tag::class )->with( $tag_string );
+});
 
-        foreach( $attributes as $each_attribute ) {
-            $tag_node->set_attribute( $each_attribute[ 0 ], $each_attribute[ 1 ] );
+$parser->expression( "explicit_tag",  function() {
+
+    $this->matcher( function() {
+
+        $this
+            ->html_name()
+                ->opt( $this->jquery_id() )
+                ->opt( $this->jquery_classes() )
+
+                ->space()
+
+                ->opt( $this->tag_attributes_list() );
+
+    });
+
+    $this->handler( function($tag_name, $tag_id, $tag_classes, $attributes) {
+
+        $tag_node = Create::a( Haiku_Tag::class )->with( $tag_name );
+
+        if( $attributes === null ) {
+            $attributes = [];
+        }
+
+        if( $tag_id !== null && ! isset( $attributes[ "id" ] ) ) {
+            $tag_node->set_attribute( "id", $tag_id );
+        }
+
+        if( $tag_classes !== null ) {
+            if( isset( $attributes[ "class" ] ) ) {
+                $attributes[ "class" ] = $tag_classes . " " . $attributes[ "class" ];
+            } else {
+                $attributes[ "class" ] = $tag_classes;
+            }
+        }
+
+        foreach( $attributes as $name => $value ) {
+            $tag_node->set_attribute( $name, $value );
         }
 
         return $tag_node;
@@ -291,7 +302,60 @@ $parser->expression( "tag",  function() {
 
 });
 
-$parser->expression( "tag_name",  function() {
+$parser->expression( "implicit_div",  function() {
+
+    $this->matcher( function() {
+
+        $this
+            ->jquery_id()
+
+                ->opt( $this->jquery_classes() )
+
+                ->space()
+
+                ->opt( $this->tag_attributes_list() )
+
+            ->or()
+                ->opt( $this->jquery_id() )
+
+                ->jquery_classes()
+
+                ->space()
+
+                ->opt( $this->tag_attributes_list() );
+
+    });
+
+    $this->handler( function($tag_id, $tag_classes, $attributes) {
+
+        $tag_node = Create::a( Haiku_Tag::class )->with( "div" );
+
+        if( $attributes === null ) {
+            $attributes = [];
+        }
+
+        if( $tag_id !== null && ! isset( $attributes[ "id" ] ) ) {
+            $tag_node->set_attribute( "id", $tag_id );
+        }
+
+        if( $tag_classes !== null ) {
+            if( isset( $attributes[ "class" ] ) ) {
+                $attributes[ "class" ] = $tag_classes . " " . $attributes[ "class" ];
+            } else {
+                $attributes[ "class" ] = $tag_classes;
+            }
+        }
+
+        foreach( $attributes as $name => $value ) {
+            $tag_node->set_attribute( $name, $value );
+        }
+
+        return $tag_node;
+    });
+
+});
+
+$parser->expression( "html_name",  function() {
 
     $this->matcher( function() {
 
@@ -302,6 +366,62 @@ $parser->expression( "tag_name",  function() {
     $this->handler( function($tag_string) {
 
         return $tag_string;
+
+    });
+
+});
+
+$parser->expression( "jquery_id",  function() {
+
+    $this->matcher( function() {
+
+        $this ->str( "#" ) ->html_name();
+
+    });
+
+    $this->handler( function($id) {
+
+        return $id;
+
+    });
+
+});
+
+$parser->expression( "jquery_classes",  function() {
+
+    $this->matcher( function() {
+
+        $this
+            ->jquery_class() ->jquery_classes()
+            ->or()
+            ->jquery_class();
+
+    });
+
+    $this->handler( function($class, $classes = null) {
+
+        if( $classes === null ) {
+            return $class;
+        }
+
+
+        return $class . " " . $classes;
+
+    });
+
+});
+
+$parser->expression( "jquery_class",  function() {
+
+    $this->matcher( function() {
+
+        $this ->str( "." ) ->html_name();
+
+    });
+
+    $this->handler( function($class) {
+
+        return $class;
 
     });
 
@@ -320,10 +440,10 @@ $parser->expression( "tag_attributes_list",  function() {
     $this->handler( function($attribute, $attribute_list = null) {
 
         if( $attribute_list === null ) {
-            return [ $attribute ];
+            return  $attribute;
         }
 
-        return array_merge( [ $attribute ], $attribute_list );
+        return array_merge( $attribute, $attribute_list );
 
     });
 
@@ -333,7 +453,7 @@ $parser->expression( "attribute",  function() {
 
     $this->matcher( function() {
 
-        $this ->attribute_name()
+        $this ->html_name()
         ->space() ->str( "=" ) ->space()
         ->attribute_value();
 
@@ -341,23 +461,7 @@ $parser->expression( "attribute",  function() {
 
     $this->handler( function($name, $value) {
 
-        return [ $name, $value ];
-
-    });
-
-});
-
-$parser->expression( "attribute_name",  function() {
-
-    $this->matcher( function() {
-
-        $this ->regex( "/([0-9a-zA-z_\-]+)/" );
-
-    });
-
-    $this->handler( function($name) {
-
-        return $name;
+        return [ $name => $value ];
 
     });
 
