@@ -55,9 +55,7 @@ $parser->expression( "lines_list",  function() {
 
         $this ->line() ->cr() ->lines_list()
         ->or()
-        ->line() ->cr()
-        ->or()
-        ->line();
+        ->line() ->eol();
 
     });
 
