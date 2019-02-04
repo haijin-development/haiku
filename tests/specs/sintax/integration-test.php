@@ -32,16 +32,13 @@ $spec->describe( "Integration test", function() {
         $this->let( "expected_html", function() {
             return
 '<html>
-    <head>
-    </head>
+    <head />
     <body>
         <div>
             <?php echo htmlspecialchars( "Entrar al ciruelo" ); ?>
-            <br>
-            </br>
+            <br />
             <?php echo htmlspecialchars( "en base a ternura" ); ?>
-            <br>
-            </br>
+            <br />
             <?php echo htmlspecialchars( "en base a olfato." ); ?>
         </div>
         <div>

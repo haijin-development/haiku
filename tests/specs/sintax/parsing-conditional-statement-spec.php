@@ -23,8 +23,7 @@ $spec->describe( "When parsing an if statement", function() {
         $this->let( "expected_html", function() {
             return
 '<?php if( $variable == "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 ';
         });
@@ -52,8 +51,7 @@ $spec->describe( "When parsing an if statement", function() {
         $this->let( "expected_html", function() {
             return
 '<?php if( $variable == "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 ';
         });
@@ -83,12 +81,10 @@ $spec->describe( "When parsing an if statement", function() {
         $this->let( "expected_html", function() {
             return
 '<?php if( $variable == "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 <?php else { ?>
-    <p>
-    </p>
+    <p />
 <?php } ?>
 ';
         });
@@ -120,16 +116,13 @@ $spec->describe( "When parsing an if statement", function() {
         $this->let( "expected_html", function() {
             return
 '<?php if( $variable == "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 <?php elseif( $variable == "321" ) { ?>
-    <p>
-    </p>
+    <p />
 <?php } ?>
 <?php else { ?>
-    <a>
-    </a>
+    <a />
 <?php } ?>
 ';
         });

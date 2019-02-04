@@ -22,10 +22,8 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -50,10 +48,8 @@ p
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -78,10 +74,8 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -106,10 +100,8 @@ p
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -134,10 +126,8 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -162,10 +152,8 @@ p
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<p>
-</p>
+"<div />
+<p />
 ";
         });
 
@@ -194,8 +182,7 @@ p
             return
 "<div>
     <p>
-        <a>
-        </a>
+        <a />
     </p>
 </div>
 ";

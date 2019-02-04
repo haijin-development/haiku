@@ -29,11 +29,19 @@ class Haiku_Tag extends Haiku_Node
 
         $html .= $this->attributes_to_html();
 
-        $html .= ">" . "\n";
+        if( $this->child_nodes->is_empty() ) {
 
-        $html .= $this->child_nodes_to_html( $indentation );
+            $html .= " />";
 
-        $html .= $this->indent( $indentation ) . "</{$this->tag}>";
+        } else {
+
+            $html .= ">" . "\n";
+
+            $html .= $this->child_nodes_to_html( $indentation );
+
+            $html .= $this->indent( $indentation ) . "</{$this->tag}>";
+
+        }
 
         return $html;
     }

@@ -23,8 +23,7 @@ $spec->describe( "When parsing loop statements", function() {
         $this->let( "expected_html", function() {
             return
 '<?php while( $variable != "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 ';
         });
@@ -52,8 +51,7 @@ $spec->describe( "When parsing loop statements", function() {
         $this->let( "expected_html", function() {
             return
 '<?php while( $variable != "123" ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 ';
         });
@@ -81,8 +79,7 @@ $spec->describe( "When parsing loop statements", function() {
         $this->let( "expected_html", function() {
             return
 '<?php foreach( $variables as $key => $value ) { ?>
-    <div>
-    </div>
+    <div />
 <?php } ?>
 ';
         });

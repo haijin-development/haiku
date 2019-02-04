@@ -21,8 +21,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div data-id="123<?php echo htmlspecialchars( "3 + 4" ); ?>321">
-</div>
+'<div data-id="123<?php echo htmlspecialchars( "3 + 4" ); ?>321" />
 ';
         });
 
@@ -46,8 +45,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div <?php echo htmlspecialchars( "id" ); ?>-data="123">
-</div>
+'<div <?php echo htmlspecialchars( "id" ); ?>-data="123" />
 ';
         });
 
@@ -71,8 +69,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div item-<?php echo htmlspecialchars( "id" ); ?>-data="123">
-</div>
+'<div item-<?php echo htmlspecialchars( "id" ); ?>-data="123" />
 ';
         });
 
@@ -96,8 +93,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div data-<?php echo htmlspecialchars( "id" ); ?>="123">
-</div>
+'<div data-<?php echo htmlspecialchars( "id" ); ?>="123" />
 ';
         });
 
@@ -121,8 +117,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-<?php echo htmlspecialchars( $id ); ?>">
-</div>
+'<div id="item-<?php echo htmlspecialchars( $id ); ?>" />
 ';
         });
 
@@ -146,8 +141,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="item-<?php echo htmlspecialchars( $id ); ?> data-<?php echo htmlspecialchars( "1" ); ?>">
-</div>
+'<div class="item-<?php echo htmlspecialchars( $id ); ?> data-<?php echo htmlspecialchars( "1" ); ?>" />
 ';
         });
 

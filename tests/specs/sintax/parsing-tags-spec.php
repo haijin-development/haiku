@@ -22,12 +22,9 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div>
-</div>
-<a>
-</a>
-<p>
-</p>
+"<div />
+<a />
+<p />
 ";
         });
 
@@ -54,8 +51,7 @@ p";
             return
 "<div>
     <p>
-        <a>
-        </a>
+        <a />
     </p>
 </div>
 ";
@@ -86,12 +82,10 @@ p";
             return
 "<div>
     <p>
-        <a>
-        </a>
+        <a />
     </p>
     <p>
-        <a>
-        </a>
+        <a />
     </p>
 </div>
 ";

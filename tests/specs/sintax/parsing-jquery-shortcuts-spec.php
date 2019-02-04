@@ -21,8 +21,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1">
-</div>
+'<div id="item-1" />
 ';
         });
 
@@ -46,8 +45,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1">
-</div>
+'<div id="item-1" />
 ';
         });
 
@@ -71,8 +69,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-10">
-</div>
+'<div id="item-10" />
 ';
         });
 
@@ -96,8 +93,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row">
-</div>
+'<div class="row" />
 ';
         });
 
@@ -121,8 +117,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row">
-</div>
+'<div class="row" />
 ';
         });
 
@@ -146,8 +141,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item">
-</div>
+'<div class="row item" />
 ';
         });
 
@@ -171,8 +165,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item">
-</div>
+'<div class="row item" />
 ';
         });
 
@@ -196,8 +189,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item format space">
-</div>
+'<div class="row item format space" />
 ';
         });
 
@@ -221,8 +213,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1" class="row item">
-</div>
+'<div id="item-1" class="row item" />
 ';
         });
 

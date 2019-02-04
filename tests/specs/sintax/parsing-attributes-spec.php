@@ -21,8 +21,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123">
-</div>
+'<div id="123" />
 ';
         });
 
@@ -46,8 +45,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123">
-</div>
+'<div id="123" />
 ';
         });
 
@@ -71,8 +69,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row">
-</div>
+'<div id="123" class="row" />
 ';
         });
 
@@ -96,8 +93,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row">
-</div>
+'<div id="123" class="row" />
 ';
         });
 
@@ -122,8 +118,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row">
-</div>
+'<div id="123" class="row" />
 ';
         });
 
@@ -147,8 +142,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="12.3 \'abc\' @()">
-</div>
+'<div id="12.3 \'abc\' @()" />
 ';
         });
 
@@ -172,8 +166,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="123&quot;321">
-</div>
+'<div id="123&quot;321" />
 ';
         });
 
@@ -197,8 +190,7 @@ $spec->describe( "When parsing tags attributes", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="&lt;&gt;&quot;">
-</div>
+'<div id="&lt;&gt;&quot;" />
 ';
         });
 
