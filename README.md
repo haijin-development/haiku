@@ -284,6 +284,24 @@ body
             = $user->get_lastname()
 ```
 
+```
+- while( $user !== null ) do
+    tr
+        td
+            = $user->get_name()
+        td
+            = $user->get_lastname()
+```
+
+```
+- for( $i; $i < 10; $i++ ) do
+    tr
+        td
+            = $users[ $i ]->get_name()
+        td
+            = $users[ $i ]->get_lastname()
+```
+
 <a name="c-3-1-8"></a>
 #### Conditionals
 
@@ -306,8 +324,21 @@ body
     = "User: " . $user->get_name() . $user->get_lastname()
 
 ```
+
+As you might guess, any PHP conditional and loop statement is valid as long as it ends with a `do` statement instead of a `{` bracket.
+
 <a name="c-3-1-9"></a>
 #### Variables
+
+Variables are referenced and assigned like in any PHP statement:
+
+```
+- $variable = 1;
+```
+
+```
+- if ( $variable == 1 ) do
+```
 
 <a name="c-3-2"></a>
 ### Rendering

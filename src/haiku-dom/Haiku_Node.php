@@ -49,4 +49,16 @@ class Haiku_Node
     {
         return str_repeat( "    ", $indentation );
     }
+
+    protected function child_nodes_to_html($indentation)
+    {
+        $html = "";
+
+        foreach( $this->child_nodes->to_array() as $i => $node ) {
+            $html .= $node->to_html( $indentation + 1 );
+            $html .= "\n";
+        }
+
+        return $html;
+    }
 }

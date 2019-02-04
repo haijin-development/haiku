@@ -177,6 +177,8 @@ $parser->expression( "statement",  function() {
         $this
             ->tag()
             ->or()
+            ->bracked_statement()
+            ->or()
             ->unescaped_text()
             ->or()
             ->escaped_text()
@@ -451,9 +453,10 @@ $parser->expression( "tag_attributes_list",  function() {
 
     $this->matcher( function() {
 
-        $this ->attribute() ->space() ->str( "," ) ->blank() ->tag_attributes_list()
-        ->or()
-        ->attribute();
+        $this
+            ->attribute() ->space() ->str( "," ) ->blank() ->tag_attributes_list()
+            ->or()
+            ->attribute();
 
     });
 
@@ -473,9 +476,10 @@ $parser->expression( "attribute",  function() {
 
     $this->matcher( function() {
 
-        $this ->html_name()
-        ->space() ->str( "=" ) ->space()
-        ->attribute_value();
+        $this
+            ->html_name()
+            ->space() ->str( "=" ) ->space()
+            ->attribute_value();
 
     });
 
@@ -503,13 +507,29 @@ $parser->expression( "attribute_value",  function() {
 
 });
 
-/// Text
+/// Statements
+
+$parser->expression( "bracked_statement",  function() {
+
+    $this->matcher( function() {
+
+        $this ->regex( "/-(.+) do/" ) ->space();
+
+    });
+
+    $this->handler( function($text) {
+
+        return Create::a( Haiku_Bracked_Statement::class )->with( trim( $text ) );
+
+    });
+
+});
 
 $parser->expression( "unescaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this-> regex( "/==(.+)(?=\n)/" );
+        $this ->regex( "/==(.+)(?=\n)/" );
 
     });
 
@@ -525,7 +545,7 @@ $parser->expression( "escaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this-> regex( "/=(.+)(?=\n)/" );
+        $this ->regex( "/=(.+)(?=\n)/" );
 
     });
 
@@ -541,7 +561,7 @@ $parser->expression( "one_line_php_statement",  function() {
 
     $this->matcher( function() {
 
-        $this-> regex( "/-(.+)(?=\n)/" );
+        $this ->regex( "/-(.+)(?=\n)/" );
 
     });
 
