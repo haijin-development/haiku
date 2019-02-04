@@ -240,10 +240,10 @@ body
 <a name="c-3-1-6"></a>
 #### PHP code interpolation
 
-Interpolate PHP code in the tag or attributes declarations with `#{}`:
+Interpolate PHP code in the tag or attributes declarations with `{{ }}`:
 
 ```
-div.user-#{ $user->get_id(); }
+div.user-{{ $user->get_id() }}
 ```
 
 will output

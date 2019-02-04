@@ -51,7 +51,7 @@ class Haiku_Tag extends Haiku_Node
             $strings[] =
                 \htmlspecialchars( $name )
                 . "=" .
-                '"' . \htmlspecialchars( $value ) . '"';
+                '"' . $value . '"';
 
         }
 
