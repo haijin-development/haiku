@@ -377,22 +377,6 @@ $parser->expression( "tag_name",  function() {
 
 });
 
-$parser->expression( "html_name",  function() {
-
-    $this->matcher( function() {
-
-        $this ->regex( "/([0-9a-zA-z_\-]+)/" );
-
-    });
-
-    $this->handler( function($tag_string) {
-
-        return $tag_string;
-
-    });
-
-});
-
 $parser->expression( "jquery_id",  function() {
 
     $this->matcher( function() {
@@ -573,17 +557,75 @@ $parser->expression( "one_line_php_statement",  function() {
 
 });
 
-/// Literals
+/// Interpolated expressions
+
+$parser->expression( "html_name",  function() {
+
+    $this->processor( function() {
+
+        $char = $this->peek_char();
+
+        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "{" ) {
+            return false;
+        }
+
+        $char = $this->next_char();
+
+        $literal = "";
+
+        while( $this->not_end_of_stream() ) {
+
+            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
+                $literal .= "<?php echo htmlspecialchars(";
+
+                $char = $this->next_char();
+
+                while( $char != "}" && $this->peek_char( 1 ) != "}" ) {
+                    $char = $this->next_char();
+
+                    $literal .= $char;
+                }
+
+                $literal .= "); ?>";
+
+                $this->skip_chars(2);
+
+                $char = $this->next_char();
+            }
+
+            if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" ) {
+                $this->skip_chars( -1 );
+                break;
+            }
+
+            $literal .= \htmlspecialchars( $char );
+
+            $char = $this->next_char();
+        }
+
+        $this->set_result( $literal );
+
+        return true;
+
+    });
+
+    $this->handler( function($tag_string) {
+
+        return $tag_string;
+
+    });
+
+});
 
 $parser->expression( "string_literal",  function() {
 
     $this->processor( function() {
 
-        $char = $this->next_char();
-
-        if( $char != '"' ) {
+        if( $this->peek_char() != '"' ) {
             return false;
         }
+
+        $this->skip_chars( 1 );
 
         $literal = "";
         $scaping_next = false;
