@@ -177,7 +177,11 @@ $parser->expression( "statement",  function() {
         $this
             ->tag()
             ->or()
-            ->text();
+            ->unescaped_text()
+            ->or()
+            ->escaped_text()
+            ->or()
+            ->one_line_php_statement();
 
     });
 
@@ -263,7 +267,7 @@ $parser->expression( "explicit_tag",  function() {
     $this->matcher( function() {
 
         $this
-            ->html_name()
+            ->tag_name()
                 ->opt( $this->jquery_id() )
                 ->opt( $this->jquery_classes() )
 
@@ -351,6 +355,22 @@ $parser->expression( "implicit_div",  function() {
         }
 
         return $tag_node;
+    });
+
+});
+
+$parser->expression( "tag_name",  function() {
+
+    $this->matcher( function() {
+
+        $this ->regex( "/([0-9a-zA-z]+)/" );
+
+    });
+
+    $this->handler( function($tag_string) {
+
+        return $tag_string;
+
     });
 
 });
@@ -485,7 +505,23 @@ $parser->expression( "attribute_value",  function() {
 
 /// Text
 
-$parser->expression( "text",  function() {
+$parser->expression( "unescaped_text",  function() {
+
+    $this->matcher( function() {
+
+        $this-> regex( "/==(.+)(?=\n)/" );
+
+    });
+
+    $this->handler( function($text) {
+
+        return Create::a( Haiku_PHP_Echoed_Expression::class )->with( trim( $text ), false );
+
+    });
+
+});
+
+$parser->expression( "escaped_text",  function() {
 
     $this->matcher( function() {
 
@@ -495,7 +531,23 @@ $parser->expression( "text",  function() {
 
     $this->handler( function($text) {
 
-        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ) );
+        return Create::a( Haiku_PHP_Echoed_Expression::class )->with( trim( $text ) );
+
+    });
+
+});
+
+$parser->expression( "one_line_php_statement",  function() {
+
+    $this->matcher( function() {
+
+        $this-> regex( "/-(.+)(?=\n)/" );
+
+    });
+
+    $this->handler( function($text) {
+
+        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ), false );
 
     });
 

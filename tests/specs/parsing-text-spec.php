@@ -11,27 +11,114 @@ $spec->describe( "When parsing text", function() {
 
     });
 
-    $this->let( "haiku", function() {
-        return
+    $this->describe( "escaped text with = and no ending semicolon", function() {
+
+        $this->let( "haiku", function() {
+            return
 "div
     = '123'
 ";
-    });
+        });
 
-    $this->let( "expected_html", function() {
-        return
+        $this->let( "expected_html", function() {
+            return
 "<div>
     <?php echo htmlspecialchars( '123' ); ?>
 </div>
 ";
+        });
+
+        $this->it( "generates the escaped text", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
     });
 
-    $this->it( "parses the text", function() {
+    $this->describe( "escaped text with = and ending semicolon", function() {
 
-        $html = $this->parser->parse_string( $this->haiku );
+        $this->let( "haiku", function() {
+            return
+"div
+    = '123';
+";
+        });
 
-        $this->expect( $html ) ->to() ->equal( $this->expected_html );
+        $this->let( "expected_html", function() {
+            return
+"<div>
+    <?php echo htmlspecialchars( '123' ); ?>
+</div>
+";
+        });
+
+        $this->it( "generates the escaped text", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
 
     });
+
+
+    $this->describe( "unescaped text with == and no ending semicolon", function() {
+
+        $this->let( "haiku", function() {
+            return
+"div
+    == '123'
+";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+    <?php echo '123'; ?>
+</div>
+";
+        });
+
+        $this->it( "generates the unescaped text", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "unescaped text with == and ending semicolon", function() {
+
+        $this->let( "haiku", function() {
+            return
+"div
+    == '123';
+";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+    <?php echo '123'; ?>
+</div>
+";
+        });
+
+        $this->it( "generates the unescaped text", function() {
+
+            $html = $this->parser->parse_string( $this->haiku );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 
 });

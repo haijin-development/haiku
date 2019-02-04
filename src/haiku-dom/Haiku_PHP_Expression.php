@@ -6,7 +6,7 @@ class Haiku_PHP_Expression extends Haiku_Node
 {
     protected $expression;
 
-    public function __construct($expression = null)
+    public function __construct($expression = "")
     {
         parent::__construct();
 
@@ -15,8 +15,10 @@ class Haiku_PHP_Expression extends Haiku_Node
 
     public function to_html($indentation)
     {
-        $html = $this->indent( $indentation ) . "<?php echo htmlspecialchars( {$this->expression} ); ?>";
+        $ending_semicolon = $this->expression[ strlen( $this->expression) - 1 ] == ";" ?
+            "" : ";";
 
-        return $html;
+        return $this->indent( $indentation ) .
+            "<?php {$this->expression}{$ending_semicolon} ?>";
     }
 }
