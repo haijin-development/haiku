@@ -274,6 +274,17 @@ will output
 </div>
 ```
 
+```
+a href = {{ $view->get_url() }}
+```
+
+will output
+
+```
+<a href="/...">
+</a>
+```
+
 <a name="c-3-1-7"></a>
 #### Loops
 
