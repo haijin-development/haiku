@@ -183,6 +183,8 @@ $parser->expression( "statement",  function() {
             ->or()
             ->escaped_text()
             ->or()
+            ->multiline_php_statement()
+            ->or()
             ->one_line_php_statement();
 
     });
@@ -541,17 +543,33 @@ $parser->expression( "escaped_text",  function() {
 
 });
 
-$parser->expression( "one_line_php_statement",  function() {
+$parser->expression( "multiline_php_statement",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/-(.+)(?=\n)/" );
+        $this ->str( "-" ) ->space() ->regex( "/\{\{(.+)\}\}/s" ) ->space();
 
     });
 
     $this->handler( function($text) {
 
-        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ), false );
+        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ), true );
+
+    });
+
+});
+
+$parser->expression( "one_line_php_statement",  function() {
+
+    $this->matcher( function() {
+
+        $this ->str( "-" ) ->regex( "/(.+)(?=\n)/" );
+
+    });
+
+    $this->handler( function($text) {
+
+        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ) );
 
     });
 

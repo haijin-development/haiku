@@ -74,7 +74,7 @@ html
 <a name="c-3-1"></a>
 ### Haiku sintax
 
-Haiku is a minimalist html template that uses indentation to avoid closing tags explictely.
+Haiku is a minimalist HTML template builder that uses indentation to avoid closing tags explicitly.
 
 <a name="c-3-1-1"></a>
 #### Html tags
@@ -117,7 +117,7 @@ html lang= "en"
 html lang="en"
 ```
 
-Separate tag attributes by with a  `,` char:
+Separate tag attributes with a  `,` char:
 
 ```
 meta name = "viewport", content="width=device-width, initial-scale=1, shrink-to-fit=no"
@@ -148,6 +148,7 @@ body
     #title
 ```
 
+for divs.
 
 Declare a tag `class` using the jquery shortcut:
 
@@ -164,6 +165,8 @@ body
     .row
         .col.col-lg-2
 ```
+
+for divs.
 
 When declaring both a tag `id` and `class`, the tag `id` must go before the `class`:
 
@@ -237,29 +240,13 @@ body
         = $title
 ```
 
-<a name="c-3-1-6"></a>
-#### PHP code interpolation
-
-Interpolate PHP code in the tag or attributes declarations with `{{ }}`:
+Evaluate multiple lines of PHP code with:
 
 ```
-div.user-{{ $user->get_id() }}
-```
-
-will output
-
-```
-<div class="user-1">
-</div>
-```
-
-Use interpolation to evaluate multiple lines of PHP code:
-
-```
-- #{
+- {{
     $title = "Haiku template";
     $haiku = [ "Este camino", "ya nadie lo recorre", "ni siquiera el ocaso." ];
-}
+}}
 
 body
     h1
@@ -271,6 +258,21 @@ body
                 = $verse
 ```
 
+<a name="c-3-1-6"></a>
+#### PHP code interpolation
+
+Interpolate PHP code in the attributes declarations with `{{ }}`:
+
+```
+div.user-{{ $user->get_id() }}
+```
+
+will output
+
+```
+<div class="user-1">
+</div>
+```
 
 <a name="c-3-1-7"></a>
 #### Loops
