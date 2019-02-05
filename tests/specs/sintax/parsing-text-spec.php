@@ -60,12 +60,12 @@ $spec->describe( "When parsing text", function() {
     });
 
 
-    $this->describe( "unescaped text with == and no ending semicolon", function() {
+    $this->describe( "unescaped text with != and no ending semicolon", function() {
 
         $this->let( "input", function() {
             return
 "div
-    == '123'
+    != '123'
 ";
         });
 
@@ -89,7 +89,7 @@ $spec->describe( "When parsing text", function() {
         $this->let( "input", function() {
             return
 "div
-    == '123';
+    != '123';
 ";
         });
 

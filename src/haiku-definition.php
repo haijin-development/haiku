@@ -485,9 +485,9 @@ $parser->expression( "attribute_value",  function() {
 
     });
 
-    $this->handler( function($value) {
+    $this->handler( function($literals) {
 
-        return $value;
+        return $literals[ 0 ];
 
     });
 
@@ -515,7 +515,7 @@ $parser->expression( "unescaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/==(.+)(?=\n)/" );
+        $this ->regex( "/!=(.+)(?=\n)/" );
 
     });
 
@@ -644,7 +644,9 @@ $parser->expression( "string_literal",  function() {
 
         $this->skip_chars( 1 );
 
-        $literal = "";
+        $literals = [];
+        $current_literal = "";
+
         $scaping_next = false;
 
         while( $this->not_end_of_stream() ) {
@@ -652,7 +654,7 @@ $parser->expression( "string_literal",  function() {
             $char = $this->next_char();
 
             if( $scaping_next === true ) {
-                $literal .= \htmlspecialchars( $char );
+                $current_literal .= \htmlspecialchars( $char );
 
                 $scaping_next = false;
                 continue;
@@ -668,27 +670,29 @@ $parser->expression( "string_literal",  function() {
             }
 
             if( $char == "(" && $this->peek_char( 1 ) == "{" ) {
-                $literal .= "<?php echo htmlspecialchars(";
+                $current_literal .= "<?php echo htmlspecialchars(";
 
                 $char = $this->next_char();
 
                 while( $char != ")" && $this->peek_char( 1 ) != "}" ) {
                     $char = $this->next_char();
 
-                    $literal .= $char;
+                    $current_literal .= $char;
                 }
 
-                $literal .= "); ?>";
+                $current_literal .= "); ?>";
 
                 $this->skip_chars(2);
 
                 $char = $this->next_char();
             }
 
-            $literal .= \htmlspecialchars( $char );
+            $current_literal .= \htmlspecialchars( $char );
         }
 
-        $this->set_result( $literal );
+        $literals[] = $current_literal;
+
+        $this->set_result( $literals );
 
         return true;
 

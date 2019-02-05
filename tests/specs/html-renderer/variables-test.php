@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Renderer;
 
-$spec->xdescribe( "When rendering a haiku template with variables", function() {
+$spec->describe( "When rendering a haiku template with variables", function() {
 
     $this->let( "renderer", function() {
 
@@ -32,7 +32,7 @@ $spec->xdescribe( "When rendering a haiku template with variables", function() {
             br
             = $haiku[ 2 ]
         div
-            = "Traducción de ({ $author }) - ({ $book })"
+            = "Traducción de {$author} - {$book}"
 ';
         });
 

@@ -71,7 +71,7 @@ $spec->describe( "When parsing text", function() {
         $this->let( "input", function() {
             return
 "div
-    == '123'
+    != '123'
 ";
         });
 
@@ -98,7 +98,7 @@ $spec->describe( "When parsing text", function() {
         $this->let( "input", function() {
             return
 "div
-    == '123';
+    != '123';
 ";
         });
 

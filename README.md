@@ -196,7 +196,7 @@ will render
 <a name="c-3-1-4"></a>
 #### Text
 
-Everything after operands `=` and `==` is plain PHP code that is evaluated and its result is rendered into the html.
+Everything after operands `=` and `!=` is plain PHP code that is evaluated and its result is rendered into the html.
 
 Render text with operand `=`:
 
@@ -213,19 +213,19 @@ body
 `=` will escape html characters, so it's safe to render dynamic input from external sources like query parameters and databases.
 
 
-Render unescaped text with operand `==`:
+Render unescaped text with operand `!=`:
 
 ```
 body
     h1
-        == "Haiku template"
+        != "Haiku template"
 ```
 
 Use unescaped text to render the contents of another template or dynamically generated html:
 
 ```
 body
-    == $view->render_template( "subtemplate.haiku" )
+    != $view->render_template( "subtemplate.haiku" )
 ```
 
 <a name="c-3-1-5"></a>
