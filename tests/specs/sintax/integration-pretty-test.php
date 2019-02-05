@@ -1,12 +1,13 @@
 <?php
 
-use Haijin\Haiku\Renderer;
+use Haijin\Parser\Parser;
+use Haijin\Haiku\Haiku_Parser_Definition;
 
-$spec->xdescribe( "Integration test", function() {
+$spec->describe( "Integration test", function() {
 
-    $this->let( "renderer", function() {
+    $this->let( "parser", function() {
 
-        return new Renderer();
+        return new Parser( Haiku_Parser_Definition::$definition );
 
     });
 
@@ -31,27 +32,26 @@ $spec->xdescribe( "Integration test", function() {
         $this->let( "expected_html", function() {
             return
 '<html>
-    <head>
-    </head>
+    <head />
     <body>
         <div>
-            Entrar al ciruelo
+            <?php echo htmlspecialchars( "Entrar al ciruelo" ); ?>
             <br />
-            en base a ternura
+            <?php echo htmlspecialchars( "en base a ternura" ); ?>
             <br />
-            en base a olfato.
+            <?php echo htmlspecialchars( "en base a olfato." ); ?>
         </div>
         <div>
-            Traducción de Alberto Silva - El libro del haiku
+            <?php echo htmlspecialchars( "Traducción de Alberto Silva - El libro del haiku" ); ?>
         </div>
     </body>
 </html>
 ';
         });
 
-        $this->it( "renders the input", function() {
+        $this->it( "parses the haiku", function() {
 
-            $html = $this->renderer->render( $this->input );
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

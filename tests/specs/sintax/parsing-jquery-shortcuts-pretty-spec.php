@@ -3,7 +3,7 @@
 use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
-$spec->describe( "When parsing tags attributes", function() {
+$spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->let( "parser", function() {
 
@@ -11,22 +11,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses a single attribute with no spaces", function() {
+    $this->describe( "parses a jquery id", function() {
 
         $this->let( "input", function() {
             return
-'div id="123"
+'div#item-1
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" />';
+'<div id="item-1" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -34,22 +35,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses a single attribute with spaces", function() {
+    $this->describe( "parses a implicit div id", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123"
+'#item-1
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" />';
+'<div id="item-1" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -57,22 +59,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with no spaces", function() {
+    $this->describe( "id attribute overrides jquery id", function() {
 
         $this->let( "input", function() {
             return
-'div id="123",class="row"
+'div#item-1 id = "item-10"
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+'<div id="item-10" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -80,22 +83,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with spaces", function() {
+    $this->describe( "parses a jquery class", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123", class = "row"
+'div.row
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+'<div class="row" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -103,23 +107,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with carriage returns", function() {
+    $this->describe( "parses an implicity div class", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123",
-     class = "row"
+'.row
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+'<div class="row" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -127,22 +131,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses attribute value with many chars", function() {
+    $this->describe( "parses many jquery classes", function() {
 
         $this->let( "input", function() {
             return
-'div id = "12.3 \'abc\' @()"
+'div.row.item
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="12.3 \'abc\' @()" />';
+'<div class="row item" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -150,22 +155,23 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses attribute value with double quotes", function() {
+    $this->describe( "parses many implicit div classes", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123\"321"
+'.row.item
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123&quot;321" />';
+'<div class="row item" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -173,22 +179,47 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "escapes html tags in attribute value", function() {
+    $this->describe( "attribute classes merges to jquery classes", function() {
 
         $this->let( "input", function() {
             return
-'div id = "<>\""
+'div.row.item class = "format space"
 ';
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="&lt;&gt;&quot;" />';
+'<div class="row item format space" />
+';
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "with both jquery id and classes", function() {
+
+        $this->let( "input", function() {
+            return
+'div#item-1.row.item
+';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div id="item-1" class="row item" />
+';
+        });
+
+        $this->it( "parses the input", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

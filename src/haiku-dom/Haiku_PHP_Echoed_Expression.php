@@ -25,6 +25,19 @@ class Haiku_PHP_Echoed_Expression extends Haiku_Node
     {
         if( $this->escaped ) {
 
+            return "<?php echo htmlspecialchars( {$this->expression} ); ?>";
+
+        } else {
+
+            return "<?php echo {$this->expression}; ?>";
+
+        }
+    }
+
+    public function to_pretty_html($indentation)
+    {
+        if( $this->escaped ) {
+
             return $this->indent( $indentation ) .
                 "<?php echo htmlspecialchars( {$this->expression} ); ?>";
 

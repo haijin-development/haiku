@@ -22,13 +22,16 @@ $spec->describe( "When parsing an if statement", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php if( $variable == "123" ) { ?><div /><?php } ?>';
+'<?php if( $variable == "123" ) { ?>
+    <div />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -47,13 +50,16 @@ $spec->describe( "When parsing an if statement", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php if( $variable == "123" ) { ?><div /><?php } ?>';
+'<?php if( $variable == "123" ) { ?>
+    <div />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -74,13 +80,19 @@ $spec->describe( "When parsing an if statement", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php if( $variable == "123" ) { ?><div /><?php } ?><?php else { ?><p /><?php } ?>';
+'<?php if( $variable == "123" ) { ?>
+    <div />
+<?php } ?>
+<?php else { ?>
+    <p />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -103,13 +115,22 @@ $spec->describe( "When parsing an if statement", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php if( $variable == "123" ) { ?><div /><?php } ?><?php elseif( $variable == "321" ) { ?><p /><?php } ?><?php else { ?><a /><?php } ?>';
+'<?php if( $variable == "123" ) { ?>
+    <div />
+<?php } ?>
+<?php elseif( $variable == "321" ) { ?>
+    <p />
+<?php } ?>
+<?php else { ?>
+    <a />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

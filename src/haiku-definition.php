@@ -40,7 +40,7 @@ $parser->expression( "root",  function() {
 
         });
 
-        return $document->to_html();
+        return $document;
 
     });
 

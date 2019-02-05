@@ -21,7 +21,7 @@ $spec->describe( "When parsing an invalid expression", function() {
 
         $this->expect( function() {
 
-            $this->parser->parse_string( $this->input )->to_html();
+            $this->parser->parse_string( $this->input )->to_pretty_html();
 
         }) ->to() ->raise(
             \Haijin\Parser\Unexpected_Expression_Error::class,

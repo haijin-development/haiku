@@ -56,6 +56,17 @@ class Haiku_Node
 
         foreach( $this->child_nodes->to_array() as $i => $node ) {
             $html .= $node->to_html( $indentation + 1 );
+        }
+
+        return $html;
+    }
+
+    protected function child_nodes_to_pretty_html($indentation)
+    {
+        $html = "";
+
+        foreach( $this->child_nodes->to_array() as $i => $node ) {
+            $html .= $node->to_pretty_html( $indentation + 1 );
             $html .= "\n";
         }
 

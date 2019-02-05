@@ -22,12 +22,15 @@ $spec->describe( "When parsing text", function() {
 
         $this->let( "expected_html", function() {
             return
-"<div><?php echo htmlspecialchars( '123' ); ?></div>";
+"<div>
+    <?php echo htmlspecialchars( '123' ); ?>
+</div>
+";
         });
 
         $this->it( "generates the escaped text", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -46,12 +49,15 @@ $spec->describe( "When parsing text", function() {
 
         $this->let( "expected_html", function() {
             return
-"<div><?php echo htmlspecialchars( '123' ); ?></div>";
+"<div>
+    <?php echo htmlspecialchars( '123' ); ?>
+</div>
+";
         });
 
         $this->it( "generates the escaped text", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -71,12 +77,15 @@ $spec->describe( "When parsing text", function() {
 
         $this->let( "expected_html", function() {
             return
-"<div><?php echo '123'; ?></div>";
+"<div>
+    <?php echo '123'; ?>
+</div>
+";
         });
 
         $this->it( "generates the unescaped text", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -95,12 +104,15 @@ $spec->describe( "When parsing text", function() {
 
         $this->let( "expected_html", function() {
             return
-"<div><?php echo '123'; ?></div>";
+"<div>
+    <?php echo '123'; ?>
+</div>
+";
         });
 
         $this->it( "generates the unescaped text", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

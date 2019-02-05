@@ -3,7 +3,7 @@
 use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
-$spec->describe( "When parsing tags attributes", function() {
+$spec->describe( "When parsing empty lines", function() {
 
     $this->let( "parser", function() {
 
@@ -11,22 +11,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses a single attribute with no spaces", function() {
+    $this->describe( "with just a cr", function() {
 
         $this->let( "input", function() {
             return
-'div id="123"
-';
+"div
+
+p";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -34,22 +37,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses a single attribute with spaces", function() {
+    $this->describe( "with just a cr at the end of stream", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123"
-';
+"div
+p
+";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -57,22 +63,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with no spaces", function() {
+    $this->describe( "with spaces", function() {
 
         $this->let( "input", function() {
             return
-'div id="123",class="row"
-';
+"div
+    
+p";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -80,22 +89,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with spaces", function() {
+    $this->describe( "with spaces at the end of the stream", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123", class = "row"
-';
+"div
+p
+   ";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -103,23 +115,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses many attributes with carriage returns", function() {
+    $this->describe( "with tabs", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123",
-     class = "row"
-';
+"div
+\t\t\t
+p";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123" class="row" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -127,22 +141,25 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses attribute value with many chars", function() {
+    $this->describe( "with tabs at the end of the stream", function() {
 
         $this->let( "input", function() {
             return
-'div id = "12.3 \'abc\' @()"
-';
+"div
+p
+\t\t\t";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="12.3 \'abc\' @()" />';
+"<div />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -150,45 +167,30 @@ $spec->describe( "When parsing tags attributes", function() {
 
     });
 
-    $this->describe( "parses attribute value with double quotes", function() {
+    $this->describe( "in between nested tags", function() {
 
         $this->let( "input", function() {
             return
-'div id = "123\"321"
-';
+"div
+
+    p
+
+        a";
         });
 
         $this->let( "expected_html", function() {
             return
-'<div id="123&quot;321" />';
+"<div>
+    <p>
+        <a />
+    </p>
+</div>
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
-
-            $this->expect( $html ) ->to() ->equal( $this->expected_html );
-
-        });
-
-    });
-
-    $this->describe( "escapes html tags in attribute value", function() {
-
-        $this->let( "input", function() {
-            return
-'div id = "<>\""
-';
-        });
-
-        $this->let( "expected_html", function() {
-            return
-'<div id="&lt;&gt;&quot;" />';
-        });
-
-        $this->it( "parses the input", function() {
-
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

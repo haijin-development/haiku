@@ -24,13 +24,16 @@ $spec->describe( "When parsing", function() {
 
             $this->let( "expected_html", function() {
                 return
-'<div><?php $variable = "123"; ?></div>';
+'<div>
+    <?php $variable = "123"; ?>
+</div>
+';
             });
 
 
             $this->it( "generates the PHP statement", function() {
 
-                $html = $this->parser->parse_string( $this->input )->to_html();
+                $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
                 $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -49,13 +52,16 @@ $spec->describe( "When parsing", function() {
 
             $this->let( "expected_html", function() {
                 return
-'<div><?php $variable = "123"; ?></div>';
+'<div>
+    <?php $variable = "123"; ?>
+</div>
+';
             });
 
 
             $this->it( "generates the PHP statement", function() {
 
-                $html = $this->parser->parse_string( $this->input )->to_html();
+                $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
                 $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -81,14 +87,17 @@ $spec->describe( "When parsing", function() {
 
             $this->let( "expected_html", function() {
                 return
-'<div><?php $variable = 1;
-        $variable += 10; ?></div>';
+'<div>
+    <?php $variable = 1;
+        $variable += 10; ?>
+</div>
+';
             });
 
 
             $this->it( "generates the PHP statement", function() {
 
-                $html = $this->parser->parse_string( $this->input )->to_html();
+                $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
                 $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

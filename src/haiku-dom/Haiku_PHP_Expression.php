@@ -20,9 +20,16 @@ class Haiku_PHP_Expression extends Haiku_Node
         $ending_semicolon = $this->expression[ strlen( $this->expression) - 1 ] == ";" ?
             "" : ";";
 
-        $html = $this->indent( $indentation ) .
+        return "<?php {$this->expression}{$ending_semicolon} ?>";
+    }
+
+    public function to_pretty_html($indentation)
+    {
+        $ending_semicolon = $this->expression[ strlen( $this->expression) - 1 ] == ";" ?
+            "" : ";";
+
+        return $this->indent( $indentation ) .
             "<?php {$this->expression}{$ending_semicolon} ?>";
 
-        return $html;
     }
 }

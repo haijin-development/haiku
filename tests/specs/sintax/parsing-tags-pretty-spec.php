@@ -22,12 +22,15 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div /><a /><p />";
+"<div />
+<a />
+<p />
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -46,12 +49,17 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div><p><a /></p></div>";
+"<div>
+    <p>
+        <a />
+    </p>
+</div>
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -72,12 +80,20 @@ p";
 
         $this->let( "expected_html", function() {
             return
-"<div><p><a /></p><p><a /></p></div>";
+"<div>
+    <p>
+        <a />
+    </p>
+    <p>
+        <a />
+    </p>
+</div>
+";
         });
 
         $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

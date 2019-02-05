@@ -25,6 +25,29 @@ class Haiku_Tag extends Haiku_Node
 
     public function to_html($indentation)
     {
+        $html = "<{$this->tag}";
+
+        $html .= $this->attributes_to_html();
+
+        if( $this->child_nodes->is_empty() ) {
+
+            $html .= " />";
+
+        } else {
+
+            $html .= ">";
+
+            $html .= $this->child_nodes_to_html( $indentation );
+
+            $html .= "</{$this->tag}>";
+
+        }
+
+        return $html;
+    }
+
+    public function to_pretty_html($indentation)
+    {
         $html = $this->indent( $indentation ) . "<{$this->tag}";
 
         $html .= $this->attributes_to_html();
@@ -37,7 +60,7 @@ class Haiku_Tag extends Haiku_Node
 
             $html .= ">" . "\n";
 
-            $html .= $this->child_nodes_to_html( $indentation );
+            $html .= $this->child_nodes_to_pretty_html( $indentation );
 
             $html .= $this->indent( $indentation ) . "</{$this->tag}>";
 

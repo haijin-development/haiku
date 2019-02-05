@@ -22,13 +22,16 @@ $spec->describe( "When parsing loop statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php while( $variable != "123" ) { ?><div /><?php } ?>';
+'<?php while( $variable != "123" ) { ?>
+    <div />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -47,13 +50,16 @@ $spec->describe( "When parsing loop statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php while( $variable != "123" ) { ?><div /><?php } ?>';
+'<?php while( $variable != "123" ) { ?>
+    <div />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -72,13 +78,16 @@ $spec->describe( "When parsing loop statements", function() {
 
         $this->let( "expected_html", function() {
             return
-'<?php foreach( $variables as $key => $value ) { ?><div /><?php } ?>';
+'<?php foreach( $variables as $key => $value ) { ?>
+    <div />
+<?php } ?>
+';
         });
 
 
         $this->it( "generates the PHP statement", function() {
 
-            $html = $this->parser->parse_string( $this->input )->to_html();
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 

@@ -13,7 +13,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses a jquery id", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div#item-1
 ';
@@ -21,13 +21,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1" />
-';
+'<div id="item-1" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -37,7 +36,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses a implicit div id", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 '#item-1
 ';
@@ -45,13 +44,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1" />
-';
+'<div id="item-1" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -61,7 +59,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "id attribute overrides jquery id", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div#item-1 id = "item-10"
 ';
@@ -69,13 +67,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-10" />
-';
+'<div id="item-10" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -85,7 +82,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses a jquery class", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div.row
 ';
@@ -93,13 +90,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row" />
-';
+'<div class="row" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -109,7 +105,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses an implicity div class", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 '.row
 ';
@@ -117,13 +113,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row" />
-';
+'<div class="row" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -133,7 +128,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses many jquery classes", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div.row.item
 ';
@@ -141,13 +136,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item" />
-';
+'<div class="row item" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -157,7 +151,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "parses many implicit div classes", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 '.row.item
 ';
@@ -165,13 +159,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item" />
-';
+'<div class="row item" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -181,7 +174,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "attribute classes merges to jquery classes", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div.row.item class = "format space"
 ';
@@ -189,13 +182,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div class="row item format space" />
-';
+'<div class="row item format space" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
@@ -205,7 +197,7 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     $this->describe( "with both jquery id and classes", function() {
 
-        $this->let( "haiku", function() {
+        $this->let( "input", function() {
             return
 'div#item-1.row.item
 ';
@@ -213,13 +205,12 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
         $this->let( "expected_html", function() {
             return
-'<div id="item-1" class="row item" />
-';
+'<div id="item-1" class="row item" />';
         });
 
-        $this->it( "parses the haiku", function() {
+        $this->it( "parses the input", function() {
 
-            $html = $this->parser->parse_string( $this->haiku );
+            $html = $this->parser->parse_string( $this->input )->to_html();
 
             $this->expect( $html ) ->to() ->equal( $this->expected_html );
 
