@@ -285,7 +285,7 @@ will output
 </a>
 ```
 
-The main difference between PHP and Haiku templates could be summarize in the following statement: PHP prefers `$` for variables, haiku loves `({})` for interpolation.
+The main difference between PHP and Haiku templates could be summarize in the following statement: PHP prefers `$` for variables, [packagist](https://packagist.org/) likes elephants to do the hard work and haiku loves `({})` for interpolation.
 
 <a name="c-3-1-7"></a>
 #### Loops
