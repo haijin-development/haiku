@@ -243,10 +243,10 @@ body
 Evaluate multiple lines of PHP code with:
 
 ```
-- {{
+- ({
     $title = "Haiku template";
     $haiku = [ "Este camino", "ya nadie lo recorre", "ni siquiera el ocaso." ];
-}}
+})
 
 body
     h1
@@ -261,10 +261,10 @@ body
 <a name="c-3-1-6"></a>
 #### PHP code interpolation
 
-Interpolate PHP code in the attributes declarations with `{{ }}`:
+Interpolate PHP code in the attributes declarations with `({})`:
 
 ```
-div.user-{{ $user->get_id() }}
+div.user-{( $user->get_id() )}
 ```
 
 will output
@@ -275,7 +275,7 @@ will output
 ```
 
 ```
-a href = {{ $view->get_url() }}
+a href = ({ $view->get_url() })
 ```
 
 will output
@@ -284,6 +284,8 @@ will output
 <a href="/...">
 </a>
 ```
+
+The main difference between PHP and Haiku templates could be summarize in the following statement: PHP prefers `$` for variables, haiku loves `({})` for interpolation.
 
 <a name="c-3-1-7"></a>
 #### Loops

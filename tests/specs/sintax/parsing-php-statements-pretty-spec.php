@@ -78,10 +78,10 @@ $spec->describe( "When parsing", function() {
             $this->let( "input", function() {
                 return
 'div
-    - {{
+    - ({
         $variable = 1;
         $variable += 10;
-    }}
+    })
 ';
             });
 

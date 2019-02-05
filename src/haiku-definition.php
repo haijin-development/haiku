@@ -547,7 +547,7 @@ $parser->expression( "multiline_php_statement",  function() {
 
     $this->matcher( function() {
 
-        $this ->str( "-" ) ->space() ->regex( "/\{\{(.+)\}\}/s" ) ->space();
+        $this ->str( "-" ) ->space() ->regex( "/\(\{(.+)\}\)/s" ) ->space();
 
     });
 
@@ -583,7 +583,7 @@ $parser->expression( "html_name",  function() {
 
         $char = $this->peek_char();
 
-        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "{" ) {
+        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "(" ) {
             return false;
         }
 
@@ -592,8 +592,7 @@ $parser->expression( "html_name",  function() {
         $literal = "";
 
         while( $this->not_end_of_stream() ) {
-
-            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
+            if( $char == "(" && $this->peek_char( 1 ) == "{" ) {
                 $literal .= "<?php echo htmlspecialchars(";
 
                 $char = $this->next_char();
@@ -668,12 +667,12 @@ $parser->expression( "string_literal",  function() {
                 break;
             }
 
-            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
+            if( $char == "(" && $this->peek_char( 1 ) == "{" ) {
                 $literal .= "<?php echo htmlspecialchars(";
 
                 $char = $this->next_char();
 
-                while( $char != "}" && $this->peek_char( 1 ) != "}" ) {
+                while( $char != ")" && $this->peek_char( 1 ) != "}" ) {
                     $char = $this->next_char();
 
                     $literal .= $char;

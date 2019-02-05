@@ -9,19 +9,21 @@ class Renderer
 {
     /// Rendering
 
-    public function render($input)
+    public function render($input, $variables = [])
     {
         $php_script = $this->new_parser()->parse_string( $input )->to_html();
 
-        return $this->evaluate_php_script( $php_script );
+        return $this->evaluate_php_script( $php_script, $variables );
     }
 
 
-    protected function evaluate_php_script($php_script)
+    protected function evaluate_php_script($php_script, $variables)
     {
         try {
 
             ob_start();
+
+            extract( $variables );
 
             eval( "?>\n" . $php_script );
 

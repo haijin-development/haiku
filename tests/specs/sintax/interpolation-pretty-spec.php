@@ -15,7 +15,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div data-id = "123{{ "3 + 4" }}321"
+'div data-id = "123({ "3 + 4" })321"
 ';
         });
 
@@ -39,7 +39,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div {{ "id" }}-data = "123"
+'div ({ "id" })-data = "123"
 ';
         });
 
@@ -63,7 +63,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div item-{{ "id" }}-data = "123"
+'div item-({ "id" })-data = "123"
 ';
         });
 
@@ -87,7 +87,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div data-{{ "id" }} = "123"
+'div data-({ "id" }) = "123"
 ';
         });
 
@@ -111,7 +111,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div#item-{{ $id }}
+'div#item-({ $id })
 ';
         });
 
@@ -135,7 +135,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div.item-{{ $id }}.data-{{ "1" }}
+'div.item-({ $id }).data-({ "1" })
 ';
         });
 
