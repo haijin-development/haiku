@@ -109,12 +109,8 @@ $parser->expression( "lines_list",  function() {
                     $node->add_child( $each_node );
                 }
 
-                if( $node->indentation == $each_node->indentation ) {
+                if( $node->indentation >= $each_node->indentation ) {
                     $nodes->add( $each_node );
-                }
-
-                if( $node->indentation > $each_node->indentation ) {
-                    throw new \Exception( "Invalid indentation found" );
                 }
 
             }, $this );

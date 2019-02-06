@@ -19,21 +19,15 @@ class Renderer
 
     protected function evaluate_php_script($php_script, $variables)
     {
-        try {
 
-            ob_start();
+        extract( $variables );
 
-            extract( $variables );
+        ob_start();
 
-            eval( "?>\n" . $php_script );
+        eval( "?>\n" . $php_script );
 
-            return ob_get_contents();
+        return ob_get_clean();
 
-        } finally {
-
-            ob_clean();
-
-        }
     }
 
     /// Creating instances

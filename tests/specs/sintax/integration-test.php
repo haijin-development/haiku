@@ -21,9 +21,9 @@ $spec->describe( "Integration test", function() {
         div
             = "Entrar al ciruelo"
             br
-            = "en base a ternura"
+            = "en base a olfato"
             br
-            = "en base a olfato."
+            = "en base a ternura."
         div
             = "Traducción de Alberto Silva - El libro del haiku"
 ';
@@ -31,7 +31,7 @@ $spec->describe( "Integration test", function() {
 
         $this->let( "expected_html", function() {
             return
-'<html><head /><body><div><?php echo htmlspecialchars( "Entrar al ciruelo" ); ?><br /><?php echo htmlspecialchars( "en base a ternura" ); ?><br /><?php echo htmlspecialchars( "en base a olfato." ); ?></div><div><?php echo htmlspecialchars( "Traducción de Alberto Silva - El libro del haiku" ); ?></div></body></html>';
+'<html><head /><body><div><?php echo htmlspecialchars( "Entrar al ciruelo" ); ?><br /><?php echo htmlspecialchars( "en base a olfato" ); ?><br /><?php echo htmlspecialchars( "en base a ternura." ); ?></div><div><?php echo htmlspecialchars( "Traducción de Alberto Silva - El libro del haiku" ); ?></div></body></html>';
         });
 
         $this->it( "parses the haiku", function() {

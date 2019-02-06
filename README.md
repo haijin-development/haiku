@@ -61,9 +61,9 @@ html
         div#haiku.poem data-id= "1"
             = "Entrar al ciruelo"
             br
-            = "en base a ternura"
+            = "en base a olfato"
             br
-            = "en base a olfato."
+            = "en base a ternura."
         div.source data-id= "1", data-author= "Alberto Silva"
             = "Traducción de Alberto Silva - El libro del haiku"
 ```

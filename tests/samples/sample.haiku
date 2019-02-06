@@ -1,0 +1,11 @@
+html
+    head
+    body
+        div
+            = "Entrar al ciruelo"
+            br
+            = "en base a olfato"
+            br
+            = "en base a ternura."
+        div
+            = "Traducción de Alberto Silva - El libro del haiku"

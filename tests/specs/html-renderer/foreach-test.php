@@ -2,7 +2,7 @@
 
 use Haijin\Haiku\Renderer;
 
-$spec->describe( "When rendering a haiku template with variables", function() {
+$spec->describe( "When rendering a haiku template with a 'foreach' statement", function() {
 
     $this->let( "renderer", function() {
 
@@ -26,11 +26,12 @@ $spec->describe( "When rendering a haiku template with variables", function() {
     head
     body
         div
-            = $haiku[ 0 ]
-            br
-            = $haiku[ 1 ]
-            br
-            = $haiku[ 2 ]
+            - foreach( $haiku as $verse ) do
+
+                = $verse
+
+                br
+
         div
             = "Traducción de {$author} - {$book}"
 ';
@@ -38,7 +39,7 @@ $spec->describe( "When rendering a haiku template with variables", function() {
 
         $this->let( "expected_html", function() {
             return
-'<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
+'<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.<br /></div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
         });
 
         $this->it( "renders the input", function() {
