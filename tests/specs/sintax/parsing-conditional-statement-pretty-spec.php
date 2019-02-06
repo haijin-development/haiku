@@ -138,4 +138,29 @@ $spec->describe( "When parsing an if statement", function() {
 
     });
 
+    $this->describe( "with no spaces after 'do'", function() {
+
+        $this->let( "input", function() {
+            return
+'- if( $variable == "123" ) do';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<?php if( $variable == "123" ) { ?>
+<?php } ?>
+';
+        });
+
+
+        $this->it( "generates the PHP statement", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 });

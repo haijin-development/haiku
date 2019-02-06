@@ -86,4 +86,27 @@ $spec->describe( "When parsing loop statements", function() {
 
     });
 
+    $this->describe( "with no ending cr", function() {
+
+        $this->let( "input", function() {
+            return
+'- while( $variable != "123" ) do';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<?php while( $variable != "123" ) { ?><?php } ?>';
+        });
+
+
+        $this->it( "generates the PHP statement", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 });

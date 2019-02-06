@@ -511,7 +511,7 @@ $parser->expression( "unescaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/!=(.+)(?=\n)/" );
+        $this ->regex( "/!=(.+)(?=\n|$)/" );
 
     });
 
@@ -527,7 +527,7 @@ $parser->expression( "escaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/=(.+)(?=\n)/" );
+        $this ->regex( "/=(.+)(?=\n|$)/" );
 
     });
 
@@ -559,7 +559,7 @@ $parser->expression( "one_line_php_statement",  function() {
 
     $this->matcher( function() {
 
-        $this ->str( "-" ) ->regex( "/(.+)(?=\n)/" );
+        $this ->str( "-" ) ->regex( "/(.+)(?=\n|$)/" );
 
     });
 

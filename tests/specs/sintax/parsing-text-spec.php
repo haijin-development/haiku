@@ -109,4 +109,76 @@ $spec->describe( "When parsing text", function() {
     });
 
 
+    $this->describe( "escaped text with = and no ending cr", function() {
+
+        $this->let( "input", function() {
+            return
+"div
+    = '123'";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div><?php echo htmlspecialchars( '123' ); ?></div>";
+        });
+
+        $this->it( "generates the escaped text", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "unescaped text with != and no ending cr", function() {
+
+        $this->let( "input", function() {
+            return
+"div
+    != '123'";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div><?php echo '123'; ?></div>";
+        });
+
+        $this->it( "generates the escaped text", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "unescaped text with != and no ending cr", function() {
+
+        $this->let( "input", function() {
+            return
+"div
+    != '123'";
+        });
+
+        $this->let( "expected_html", function() {
+            return
+"<div>
+    <?php echo '123'; ?>
+</div>
+";
+        });
+
+        $this->it( "generates the escaped text", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 });
