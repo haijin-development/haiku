@@ -5,14 +5,12 @@ namespace Haijin\Haiku;
 class Haiku_PHP_Expression extends Haiku_Node
 {
     protected $expression;
-    protected $multiline;
 
-    public function __construct($expression = "", $is_multiline = false)
+    public function __construct($expression = "")
     {
         parent::__construct();
 
         $this->expression = $expression;
-        $this->is_multiline = $is_multiline;
     }
 
     public function to_html($indentation)

@@ -15,7 +15,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div data-id = "123({ "3 + 4" })321"
+'div data-id = "123{{ "3 + 4" }}321"
 ';
         });
 
@@ -35,11 +35,35 @@ $spec->describe( "When interpolating PHP statements", function() {
 
     });
 
+    $this->describe( "as a full attribute", function() {
+
+        $this->let( "input", function() {
+            return
+'div {{ "id" }} = "123"
+';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div <?php echo htmlspecialchars( "id" ); ?>="123" />
+';
+        });
+
+        $this->it( "interpolates the PHP expression", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_pretty_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
     $this->describe( "at the beginning of an attribute name", function() {
 
         $this->let( "input", function() {
             return
-'div ({ "id" })-data = "123"
+'div {{ "id" }}-data = "123"
 ';
         });
 
@@ -63,7 +87,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div item-({ "id" })-data = "123"
+'div item-{{ "id" }}-data = "123"
 ';
         });
 
@@ -87,7 +111,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div data-({ "id" }) = "123"
+'div data-{{ "id" }} = "123"
 ';
         });
 
@@ -111,7 +135,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div#item-({ $id })
+'div#item-{{ $id }}
 ';
         });
 
@@ -135,7 +159,7 @@ $spec->describe( "When interpolating PHP statements", function() {
 
         $this->let( "input", function() {
             return
-'div.item-({ $id }).data-({ "1" })
+'div.item-{{ $id }}.data-{{ "1" }}
 ';
         });
 

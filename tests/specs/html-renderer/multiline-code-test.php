@@ -17,12 +17,12 @@ $spec->describe( "When rendering a haiku template with a multiline statement", f
 'html
     head
     body
-        - ({
+        - {{
                 $haiku  = [ "Entrar al ciruelo", "en base a olfato", "en base a ternura." ];
                 $author = "Alberto Silva";
                 $book   = "El libro del haiku";
 
-            })
+            }}
         div
             = $haiku[ 0 ]
             br

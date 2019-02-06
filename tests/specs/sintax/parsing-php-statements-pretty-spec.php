@@ -109,10 +109,10 @@ $spec->describe( "When parsing", function() {
             $this->let( "input", function() {
                 return
 'div
-    - ({
+    - {{
         $variable = 1;
         $variable += 10;
-    })
+    }}
 ';
             });
 
@@ -145,10 +145,10 @@ $spec->describe( "When parsing", function() {
             $this->let( "input", function() {
                 return
 'div
-    - ({
+    - {{
         $variable = 1;
         $variable += 10;
-    })';
+    }}';
             });
 
             $this->let( "expected_html", function() {

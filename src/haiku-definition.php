@@ -179,9 +179,7 @@ $parser->expression( "statement",  function() {
             ->or()
             ->escaped_text()
             ->or()
-            ->multiline_php_statement()
-            ->or()
-            ->one_line_php_statement();
+            ->php_statement();
 
     });
 
@@ -481,9 +479,9 @@ $parser->expression( "attribute_value",  function() {
 
     });
 
-    $this->handler( function($literals) {
+    $this->handler( function($string) {
 
-        return $literals[ 0 ];
+        return $string;
 
     });
 
@@ -511,7 +509,10 @@ $parser->expression( "unescaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/!=(.+)(?=\n|$)/" );
+        $this
+            ->regex( "/!=\s*\{\{(.+)\}\}/sU" ) ->space()
+            ->or()
+            ->regex( "/!=(.+)(?=\n|$)/" );
 
     });
 
@@ -527,7 +528,10 @@ $parser->expression( "escaped_text",  function() {
 
     $this->matcher( function() {
 
-        $this ->regex( "/=(.+)(?=\n|$)/" );
+        $this
+            ->regex( "/=\s*\{\{(.+)\}\}/sU" ) ->space()
+            ->or()
+            ->regex( "/=(.+)(?=\n|$)/" );
 
     });
 
@@ -539,27 +543,14 @@ $parser->expression( "escaped_text",  function() {
 
 });
 
-$parser->expression( "multiline_php_statement",  function() {
+$parser->expression( "php_statement",  function() {
 
     $this->matcher( function() {
 
-        $this ->str( "-" ) ->space() ->regex( "/\(\{(.+)\}\)/s" ) ->space();
-
-    });
-
-    $this->handler( function($text) {
-
-        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ), true );
-
-    });
-
-});
-
-$parser->expression( "one_line_php_statement",  function() {
-
-    $this->matcher( function() {
-
-        $this ->str( "-" ) ->regex( "/(.+)(?=\n|$)/" );
+        $this
+            ->regex( "/-\s*\{\{(.+)\}\}/sU" ) ->space()
+            ->or()
+            ->regex( "/-(.+)(?=\n|$)/" );
 
     });
 
@@ -579,7 +570,7 @@ $parser->expression( "html_name",  function() {
 
         $char = $this->peek_char();
 
-        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "(" ) {
+        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "{" ) {
             return false;
         }
 
@@ -588,7 +579,7 @@ $parser->expression( "html_name",  function() {
         $literal = "";
 
         while( $this->not_end_of_stream() ) {
-            if( $char == "(" && $this->peek_char( 1 ) == "{" ) {
+            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
                 $literal .= "<?php echo htmlspecialchars(";
 
                 $char = $this->next_char();
@@ -640,7 +631,6 @@ $parser->expression( "string_literal",  function() {
 
         $this->skip_chars( 1 );
 
-        $literals = [];
         $current_literal = "";
 
         $scaping_next = false;
@@ -665,12 +655,12 @@ $parser->expression( "string_literal",  function() {
                 break;
             }
 
-            if( $char == "(" && $this->peek_char( 1 ) == "{" ) {
+            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
                 $current_literal .= "<?php echo htmlspecialchars(";
 
                 $char = $this->next_char();
 
-                while( $char != ")" && $this->peek_char( 1 ) != "}" ) {
+                while( $char != "}" && $this->peek_char( 1 ) != "}" ) {
                     $char = $this->next_char();
 
                     $current_literal .= $char;
@@ -681,14 +671,16 @@ $parser->expression( "string_literal",  function() {
                 $this->skip_chars(2);
 
                 $char = $this->next_char();
+
+                if( $char == '"' ) {
+                    break;
+                }
             }
 
             $current_literal .= \htmlspecialchars( $char );
         }
 
-        $literals[] = $current_literal;
-
-        $this->set_result( $literals );
+        $this->set_result( $current_literal );
 
         return true;
 
