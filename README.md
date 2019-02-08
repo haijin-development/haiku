@@ -358,6 +358,64 @@ Variables are referenced and assigned like in any PHP statement:
 <a name="c-3-2"></a>
 ### Rendering
 
+Render an input string on the fly with:
+
+```php
+use Haijin\Haiku\Renderer;
+
+$renderer = new Renderer();
+
+$input =
+'html
+    body
+        = "A haiku template from {$author}"
+';
+
+$html = $renderer->render( $input, [
+    "author" => "Haijin Development"
+]);
+```
+
+Render an input file with:
+
+```php
+use Haijin\Haiku\Renderer;
+
+$renderer = new Renderer();
+
+$renderer->configure( function($renderer) {
+
+    $renderer->cache_folder = "php-templates-cache";
+
+});
+
+$html = $renderer->render_file( "sample.haiku.html", [
+    "author" => "Haijin Development"
+]);
+```
+
+#### How does the rendering work
+
+The renderer translates haiku template files of the form
+
+```
+'html
+    body
+        = "A haiku template from {$author}"
+'
+```
+
+to PHP scripts of the form:
+
+```
+<html><body><?php echo htmlspecialchars( "A haiku template from {$author}" ); ?></body></html>
+```
+
+and stores them in the given cache folder.
+
+Later requests to parse the `sample.haiku.html` file are not translated again, instead the PHP cached file is evaluated to generate the HTML unless its haiku source file changed.
+
+This makes `haijin/haiku` pretty efficient to render its templates as it relies directly on the evaluation of PHP scripts with all of its optimizations.
 
 <a name="c-4"></a>
 ## Running the specs

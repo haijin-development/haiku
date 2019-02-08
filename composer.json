@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "haijin/haiku",
     "description": "The most simple template engine possible, inspired in Ruby's Slim.",
     "keywords": ["html", "template"],
@@ -21,7 +20,7 @@
         }
     },
     "require": {
-        "haijin/tools": "^1.0",
+        "haijin/tools": "^1.1",
         "haijin/instantiator": "^1.0",
         "haijin/parser": "^1.0"
     },

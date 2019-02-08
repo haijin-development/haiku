@@ -5,14 +5,6 @@ namespace Haijin\Haiku;
 use Haijin\Instantiator\Create;
 use Haijin\Ordered_Collection;
 
-/*
- * Regex cheatsheet:
- *      group without capturing: (?:)
- *      lookahead assertion: (?=)
- *      lookahead negation: (?!)
- */
-
-
 $parser->before_parsing( function() {
 
     $this->indentation_unit = null;
