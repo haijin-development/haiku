@@ -17,6 +17,12 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     });
 
+    $this->let( "samples_folder", function() {
+
+        return __DIR__ . "/../../samples/";
+
+    });
+
     $this->let( "renderer", function() {
 
         return ( new Renderer() )->configure( function($renderer) {
@@ -31,7 +37,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->let( "input_file", function() {
 
-            return __DIR__ . "/../../samples/sample.haiku.html";
+            return $this->samples_folder . "sample.haiku.html";
 
         });
 
@@ -54,7 +60,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->let( "input_file", function() {
 
-            return __DIR__ . "/../../samples/sample-with-variables.haiku.html";
+            return $this->samples_folder . "sample-with-variables.haiku.html";
 
         });
 
@@ -85,7 +91,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->let( "input_file", function() {
 
-            return new File_Path( __DIR__ . "/../../samples/temp-sample.haiku.html" );
+            return new File_Path( $this->samples_folder . "temp-sample.haiku.html" );
 
         });
 
@@ -109,6 +115,36 @@ $spec->describe( "When rendering a haiku template file", function() {
             $html = $this->renderer->render_file( $this->input_file->to_string() );
 
             $this->expect( $html ) ->to() ->equal( "<div><a /></div>" );
+
+        });
+
+    });
+
+    $this->describe( "when the file is absent", function() {
+
+        $this->let( "input_file", function() {
+
+            return $this->samples_folder . "absent-file.haiku.html";
+
+        });
+
+        $this->it( "raises an error", function() {
+
+            $this->expect( function() {
+
+                $this->renderer->render_file( $this->input_file );
+
+            }) ->to() ->raise(
+                \Haijin\Haiku\File_Not_Found_Error::class,
+                function($error) {
+
+                    $this->expect( $error->getMessage() )
+                        ->to() ->equal( "File '/home/martin/dev/src/haijin/php-haiku/tests/specs/html-renderer/../../samples/absent-file.haiku.html' not found." );
+
+                    $this->expect( $error->get_filename() )
+                        ->to() ->equal( $this->samples_folder . "absent-file.haiku.html" );
+
+            });
 
         });
 

@@ -696,7 +696,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
         $char = "spaces";
     };
 
-    throw Create::an( UnmatchedIndentationError::class )->with(
+    throw Create::an( Unmatched_Indentation_Error::class )->with(
             "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->current_line()} column: {$this->current_column()}."
         );
 
@@ -704,7 +704,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
 
 $parser->def( "raise_not_unique_indentation_char_error",  function() {
 
-    throw Create::an( NotUniqueIndentationCharError::class )->with(
+    throw Create::an( Not_Unique_Indentation_Char_Error::class )->with(
             "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
@@ -712,7 +712,7 @@ $parser->def( "raise_not_unique_indentation_char_error",  function() {
 
 $parser->def( "raise_indentation_char_missmatch_error",  function($used_chars, $missmatched_chars) {
 
-    throw Create::an( IndentationCharMissmatchError::class )->with(
+    throw Create::an( Indentation_Char_Missmatch_Error::class )->with(
             "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
@@ -722,7 +722,7 @@ $parser->def( "raise_invalid_indentation_increment_error",  function() {
 
     $line_index = $this->current_line() - 1;
 
-    throw Create::an( InvalidIndentationIncrementError::class )->with(
+    throw Create::an( Invalid_Indentation_Increment_Error::class )->with(
             "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->current_column()}."
     );
 

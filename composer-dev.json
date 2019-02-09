@@ -30,7 +30,7 @@
         }
     },
     "require": {
-        "haijin/tools": "^1.0",
+        "haijin/tools": "^1.1",
         "haijin/instantiator": "^1.0",
         "haijin/parser": "*"
     },

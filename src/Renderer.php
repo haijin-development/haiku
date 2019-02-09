@@ -5,6 +5,7 @@ namespace Haijin\Haiku;
 use Haijin\Instantiator\Create;
 use Haijin\Parser\Parser;
 use Haijin\Files_Cache;
+use Haijin\File_Path;
 
 class Renderer
 {
@@ -95,7 +96,9 @@ class Renderer
 
             if( $cache->needs_caching( $filename ) ) {
 
-                $php_contents = $this->parse_haiku( file_get_contents( $filename ) );
+                $php_contents = $this->parse_haiku(
+                    $this->get_file_contents( $filename )
+                );
 
                 $cache->cache_file_contents(
                     $filename,
@@ -111,7 +114,7 @@ class Renderer
 
         }, $this );
 
-        return $this->render( file_get_contents( $filename ), $variables );
+        return $this->render( $this->get_file_contents( $filename ), $variables );
     }
 
     public function render($input, $variables = [])
@@ -142,10 +145,31 @@ class Renderer
 
     }
 
+    protected function get_file_contents($filename)
+    {
+        $filepath = new File_Path( $filename );
+
+        if( ! $filepath->exists_file() ) {
+            $this->raise_file_not_found_error( $filename );
+        }
+
+        return $filepath->file_contents();
+    }
+
     /// Creating instances
 
     protected function new_parser()
     {
         return Create::a( Parser::class )->with( Haiku_Parser_Definition::$definition );
+    }
+
+    /// Raising errors
+
+    protected function raise_file_not_found_error($filename)
+    {
+        throw new File_Not_Found_Error(
+            "File '{$filename}' not found.",
+            $filename
+        );
     }
 }
