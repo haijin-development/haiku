@@ -100,28 +100,35 @@ class Renderer
                     $this->get_file_contents( $filename )
                 );
 
+                $php_filename = str_replace( "/", "---", $filename );
+
                 $cache->cache_file_contents(
                     $filename,
                     $php_contents,
-                    str_replace( "/", "---", $filename )
+                    $php_filename
                 );
 
             } else {
-                $php_contents = file_get_contents( $this->cache->get_path_of( $filename ) );
+                $php_filename = $this->cache->get_path_of( $filename );
+
+                $php_contents = file_get_contents( $php_filename );
             }
 
-            return $this->evaluate_php_script( $php_contents, $variables );
+            Evaluation_Sandbox::$haiku_filename = $filename;
+            Evaluation_Sandbox::$php_filename = $php_filename;
+
+            return $this->evaluate_php_script( $php_contents, $variables, $filename );
 
         }, $this );
 
-        return $this->render( $this->get_file_contents( $filename ), $variables );
+        return $this->render( $this->get_file_contents( $filename ), $variables, $filename );
     }
 
-    public function render($input, $variables = [])
+    public function render($input, $variables = [], $filename = null)
     {
         $php_script = $this->parse_haiku( $input );
 
-        return $this->evaluate_php_script( $php_script, $variables );
+        return $this->evaluate_php_script( $php_script, $variables, $filename );
     }
 
     protected function parse_haiku($input)
@@ -132,17 +139,28 @@ class Renderer
                 $haiku_document->to_pretty_html() : $haiku_document->to_html();
     }
 
-    protected function evaluate_php_script($php_script, $variables)
+    protected function evaluate_php_script($php_script, $variables, $filename = null)
     {
+        $sandbox = new Evaluation_Sandbox();
 
-        extract( $variables );
+        $result = $sandbox->evaluate($php_script, $variables);
 
-        ob_start();
+        foreach( $sandbox->get_evaluation_errors() as $error ) {
 
-        eval( "?>\n" . $php_script );
+            $message = "Haiku evaluation error: '" . $error->message ."'";
 
-        return ob_get_clean();
+            if( $filename !== null ) {
+                $message .= "\n in file {$this->cache->get_path_of( $filename )}\n";
+                $message .= "generated from haiku template {$filename}\n";
+            }
 
+            $message .= " at line {$error->line_number}.\n";
+
+            echo $message;
+
+        }
+
+        return $result;
     }
 
     protected function get_file_contents($filename)

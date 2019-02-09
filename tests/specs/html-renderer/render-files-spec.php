@@ -150,4 +150,31 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     });
 
+    $this->xdescribe( "when the file has php errors", function() {
+
+        $this->let( "renderer", function() {
+
+            return ( new Renderer() )->configure( function($renderer) {
+
+                $renderer->cache_folder = $this->cache_folder;
+                $renderer->pretty_html = true;
+
+            }, $this );
+
+        });
+
+        $this->let( "input_file", function() {
+
+            return $this->samples_folder . "sample-with-php-errors.haiku.html";
+
+        });
+
+        $this->it( "raises an error", function() {
+
+            $this->renderer->render_file( $this->input_file );
+
+        });
+
+    });
+
 });
