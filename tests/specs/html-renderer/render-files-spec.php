@@ -139,7 +139,7 @@ $spec->describe( "When rendering a haiku template file", function() {
                 function($error) {
 
                     $this->expect( $error->getMessage() )
-                        ->to() ->equal( "File '/home/martin/dev/src/haijin/php-haiku/tests/specs/html-renderer/../../samples/absent-file.haiku.html' not found." );
+                        ->to() ->equal( "File '{$this->samples_folder}absent-file.haiku.html' not found." );
 
                     $this->expect( $error->get_filename() )
                         ->to() ->equal( $this->samples_folder . "absent-file.haiku.html" );
