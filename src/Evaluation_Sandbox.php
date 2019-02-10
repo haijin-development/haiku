@@ -37,7 +37,15 @@ class Evaluation_Sandbox
 
         });
 
-        eval( "?>\n" . $php_script );
+        try {
+
+            eval( "?>\n" . $php_script );
+
+        } finally {
+
+            restore_error_handler();
+
+        }
 
         return ob_get_clean();
     }
