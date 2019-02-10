@@ -13,13 +13,13 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     $this->let( "cache_folder", function() {
 
-        return __DIR__ . "/../../cache";
+        return "tests/cache";
 
     });
 
     $this->let( "samples_folder", function() {
 
-        return __DIR__ . "/../../samples/";
+        return "tests/samples/";
 
     });
 
@@ -154,7 +154,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->let( "input_file", function() {
 
-            return $this->samples_folder . "sample.haiku.html";
+            return __DIR__ . "/../../samples/sample.haiku.html";
 
         });
 
