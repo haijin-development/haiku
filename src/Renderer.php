@@ -100,7 +100,15 @@ class Renderer
                     $this->get_file_contents( $filename )
                 );
 
-                $php_filename = str_replace( "/", "---", $filename );
+                if( ( new File_Path( $filename) )->is_absolute() ) {
+
+                    $php_filename = str_replace( "/", "---", $filename );
+
+                } else {
+
+                    $php_filename = $filename;
+
+                }
 
                 $cache->cache_file_contents(
                     $filename,

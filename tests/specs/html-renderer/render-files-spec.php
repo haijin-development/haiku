@@ -150,6 +150,52 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     });
 
+    $this->describe( "with an absolute path", function() {
+
+        $this->let( "input_file", function() {
+
+            return $this->samples_folder . "sample.haiku.html";
+
+        });
+
+        $this->let( "expected_html", function() {
+            return
+    '<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
+        });
+
+        $this->it( "renders the in a folder less file", function() {
+
+            $html = $this->renderer->render_file( $this->input_file );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
+    $this->describe( "with a relative path", function() {
+
+        $this->let( "input_file", function() {
+
+            return "tests/samples/sample.haiku.html";
+
+        });
+
+        $this->let( "expected_html", function() {
+            return
+    '<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
+        });
+
+        $this->it( "renders the in a subfolder", function() {
+
+            $html = $this->renderer->render_file( $this->input_file );
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
     $this->xdescribe( "when the file has php errors", function() {
 
         $this->let( "renderer", function() {
