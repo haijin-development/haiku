@@ -163,7 +163,7 @@ $spec->describe( "When rendering a haiku template file", function() {
     '<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
         });
 
-        $this->it( "renders the in a folder less file", function() {
+        $this->it( "renders the template", function() {
 
             $html = $this->renderer->render_file( $this->input_file );
 
@@ -186,7 +186,7 @@ $spec->describe( "When rendering a haiku template file", function() {
     '<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
         });
 
-        $this->it( "renders the in a subfolder", function() {
+        $this->it( "renders the template", function() {
 
             $html = $this->renderer->render_file( $this->input_file );
 

@@ -92,6 +92,9 @@ class Renderer
 
     public function render_file($filename, $variables = [])
     {
+        $this->ensure_manifest_folder_exists();
+        $this->ensure_cache_folder_exists();
+
         return $this->cache->locking_do( function($cache) use($filename, $variables) {
 
             if( $cache->needs_caching( $filename ) ) {
@@ -164,6 +167,32 @@ class Renderer
         return Create::a( Parser::class )->with( Haiku_Parser_Definition::$definition );
     }
 
+    protected function ensure_manifest_folder_exists()
+    {
+        $folder = Create::a( File_Path::class )->with( $this->get_manifest_filename() )->back();
+
+        if( $folder->exists_folder() ) {
+            return;
+        }
+
+        if( $folder->is_empty() || $folder->create_folder_path() === false ) {
+            $this->raise_could_not_create_manifest_folder_error( $folder->to_string() );
+        }
+    }
+
+    protected function ensure_cache_folder_exists()
+    {
+        $folder = Create::a( File_Path::class )->with( $this->get_cache_folder() );
+
+        if( $folder->exists_folder() ) {
+            return;
+        }
+
+        if( $folder->is_empty() || $folder->create_folder_path() === false ) {
+            $this->raise_could_not_create_cache_folder_error( $folder->to_string() );
+        }
+    }
+
     /// Raising errors
 
     protected function raise_file_not_found_error($filename)
@@ -172,5 +201,10 @@ class Renderer
             "File '{$filename}' not found.",
             $filename
         );
+    }
+
+    protected function raise_could_not_create_manifest_folder_error($folder)
+    {
+        throw new \Exception( "Could not create manifest folder '$folder'." );
     }
 }
