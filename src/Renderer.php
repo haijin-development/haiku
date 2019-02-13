@@ -127,11 +127,11 @@ class Renderer
         return $sandbox->evaluate_file($php_filename, $variables);
     }
 
-    public function render($input, $variables = [], $filename = null)
+    public function render($input, $variables = [])
     {
         $php_script = $this->parse_haiku( $input );
 
-        return $this->evaluate_php_script( $php_script, $variables, $filename );
+        return $this->evaluate_php_script( $php_script, $variables );
     }
 
     protected function parse_haiku($input)
@@ -142,7 +142,7 @@ class Renderer
                 $haiku_document->to_pretty_html() : $haiku_document->to_html();
     }
 
-    protected function evaluate_php_script($php_script, $variables, $filename = null)
+    protected function evaluate_php_script($php_script, $variables)
     {
         $sandbox = new Evaluation_Sandbox();
 
