@@ -1,8 +1,7 @@
 <?php
 
-namespace Haijin\Haiku;
+namespace Haijin\Haiku\Dom;
 
-use Haijin\Instantiator\Create;
 use Haijin\Ordered_Collection;
 
 class Haiku_Node
@@ -13,7 +12,7 @@ class Haiku_Node
 
     public function __construct()
     {
-        $this->child_nodes = Create::an( Ordered_Collection::class )->with();
+        $this->child_nodes = new Ordered_Collection();
     }
 
     /// Accessing

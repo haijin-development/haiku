@@ -2,10 +2,10 @@
 
 namespace Haijin\Haiku;
 
-use Haijin\Instantiator\Create;
 use Haijin\Parser\Parser;
 use Haijin\Files_Cache;
 use Haijin\File_Path;
+use  Haijin\Haiku\Errors\File_Not_Found_Error;
 
 class Renderer
 {
@@ -16,8 +16,19 @@ class Renderer
 
     public function __construct()
     {
-        $this->cache = Create::a( Files_Cache::class )->with();
+        $this->cache = new Files_Cache();
         $this->pretty_html = false;
+    }
+
+    /// Configuring
+
+    public function configure($callable)
+    {
+        $configuration_dsl = new Renderer_Configuration_DSL( $this );
+
+        $configuration_dsl->configure( $callable );
+
+        return $this;
     }
 
     /// Accessing
@@ -56,36 +67,6 @@ class Renderer
     public function is_pretty_html()
     {
         return $this->pretty_html;
-    }
-
-    /// Configuring
-
-    public function configure($closure, $binding = null)
-    {
-        if( $binding === null ) {
-            $binding = $this;
-        }
-
-        $closure->call( $binding, $this );
-
-        return $this;
-    }
-
-    public function __set($attribute, $value)
-    {
-        if( $attribute == "cache_folder" ) {
-            $this->set_cache_folder( $value );
-        }
-
-        if( $attribute == "cache_manifest_filename" ) {
-            $this->set_cache_manifest_filename( $value );
-        }
-
-        if( $attribute == "pretty_html" ) {
-            $this->set_pretty_html( $value );
-        }
-
-        $this->$attribute = $value;
     }
 
     /// Rendering
@@ -164,12 +145,12 @@ class Renderer
 
     protected function new_parser()
     {
-        return Create::a( Parser::class )->with( Haiku_Parser_Definition::$definition );
+        return new Parser( Haiku_Parser_Definition::$definition );
     }
 
     protected function ensure_manifest_folder_exists()
     {
-        $folder = Create::a( File_Path::class )->with( $this->get_manifest_filename() )->back();
+        $folder = ( new File_Path( $this->get_manifest_filename() ) )->back();
 
         if( $folder->exists_folder() ) {
             return;
@@ -182,7 +163,7 @@ class Renderer
 
     protected function ensure_cache_folder_exists()
     {
-        $folder = Create::a( File_Path::class )->with( $this->get_cache_folder() );
+        $folder = new File_Path( $this->get_cache_folder() );
 
         if( $folder->exists_folder() ) {
             return;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Haijin\Haiku;
+namespace Haijin\Haiku\Errors;
 
 class Error extends \RuntimeException
 {

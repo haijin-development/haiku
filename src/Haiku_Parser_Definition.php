@@ -2,7 +2,6 @@
 
 namespace Haijin\Haiku;
 
-use Haijin\Instantiator\Create;
 use Haijin\Parser\Parser_Definition;
 
 class Haiku_Parser_Definition
@@ -10,5 +9,9 @@ class Haiku_Parser_Definition
     static public $definition;
 }
 
-Haiku_Parser_Definition::$definition = Create::a( Parser_Definition::class )->with()
-    ->define_in_file( __DIR__ . "/haiku-definition.php" );
+Haiku_Parser_Definition::$definition = ( new Parser_Definition() )
+    ->define( function($parser) {
+
+        require( __DIR__ . "/Grammar/haiku-grammar.php" );
+
+    });

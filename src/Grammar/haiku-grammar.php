@@ -1,9 +1,18 @@
 <?php
 
-namespace Haijin\Haiku;
+namespace Haijin\Haiku\Grammar;
 
-use Haijin\Instantiator\Create;
 use Haijin\Ordered_Collection;
+use Haijin\Haiku\Dom\Haiku_Document;
+use Haijin\Haiku\Dom\Haiku_Tag;
+use Haijin\Haiku\Dom\Haiku_Bracked_Statement;
+use Haijin\Haiku\Dom\Haiku_PHP_Expression;
+use Haijin\Haiku\Dom\Haiku_PHP_Echoed_Expression;
+use  Haijin\Haiku\Errors\Not_Unique_Indentation_Char_Error;
+use  Haijin\Haiku\Errors\Indentation_Char_Missmatch_Error;
+use  Haijin\Haiku\Errors\Unmatched_Indentation_Error;
+use  Haijin\Haiku\Errors\Invalid_Indentation_Increment_Error;
+
 
 $parser->before_parsing( function() {
 
@@ -14,17 +23,17 @@ $parser->before_parsing( function() {
 
 /// Root
 
-$parser->expression( "root",  function() {
+$parser->expression( "root",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this->lines_list();
+        $exp ->lines_list();
 
     });
 
-    $this->handler( function($nodes_list) {
+    $exp->handler( function($nodes_list) {
 
-        $document = Create::a( Haiku_Document::class )->with();
+        $document = new Haiku_Document();
 
         $nodes_list->each_do( function($node) use($document) {
 
@@ -41,24 +50,24 @@ $parser->expression( "root",  function() {
 
 /// Lines
 
-$parser->expression( "lines_list",  function() {
+$parser->expression( "lines_list",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->line() ->cr() ->lines_list()
             ->or()
             ->line() ->eol();
 
     });
 
-    $this->handler( function($node, $nodes_list = null) {
+    $exp->handler( function($node, $nodes_list = null) {
 
         if( $node === null ) {
             return $nodes_list;
         }
 
-        $nodes = Create::an( Ordered_Collection::class )->with();
+        $nodes = new Ordered_Collection();
 
         if( $nodes_list === null ) {
 
@@ -137,16 +146,16 @@ $parser->expression( "lines_list",  function() {
 
 });
 
-$parser->expression( "line", function() {
+$parser->expression( "line", function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->indentation() ->opt( $this->statement() );
+        $exp ->indentation() ->opt( $exp->statement() );
 
 
     });
 
-    $this->handler( function($indentation, $tag_node = null) {
+    $exp->handler( function($indentation, $tag_node = null) {
 
         if( $tag_node !== null ) {
             $tag_node->indentation = $indentation;
@@ -158,11 +167,11 @@ $parser->expression( "line", function() {
 
 });
 
-$parser->expression( "statement",  function() {
+$parser->expression( "statement",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->tag()
             ->or()
             ->bracked_statement()
@@ -175,7 +184,7 @@ $parser->expression( "statement",  function() {
 
     });
 
-    $this->handler( function($tag_node = null) {
+    $exp->handler( function($tag_node = null) {
 
         return $tag_node;
 
@@ -185,15 +194,15 @@ $parser->expression( "statement",  function() {
 
 /// Indentation
 
-$parser->expression( "indentation",  function() {
+$parser->expression( "indentation",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this-> regex( "/((?: |\t)*)(?! |\t)/" );
+        $exp-> regex( "/((?: |\t)*)(?! |\t)/" );
 
     });
 
-    $this->handler( function($spaces) {
+    $exp->handler( function($spaces) {
 
         if( preg_match( "/\t/", $spaces ) &&  preg_match( "/ /", $spaces ) ) {
             $this->raise_not_unique_indentation_char_error();
@@ -235,41 +244,41 @@ $parser->expression( "indentation",  function() {
 
 /// Tags
 
-$parser->expression( "tag",  function() {
+$parser->expression( "tag",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->explicit_tag()
             ->or()
             ->implicit_div();
 
     });
 
-    $this->handler( function($tag_node) {
+    $exp->handler( function($tag_node) {
         return $tag_node;
     });
 
 });
 
-$parser->expression( "explicit_tag",  function() {
+$parser->expression( "explicit_tag",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->tag_name()
-                ->opt( $this->jquery_id() )
-                ->opt( $this->jquery_classes() )
+                ->opt( $exp->jquery_id() )
+                ->opt( $exp->jquery_classes() )
 
                 ->space()
 
-                ->opt( $this->tag_attributes_list() );
+                ->opt( $exp->tag_attributes_list() );
 
     });
 
-    $this->handler( function($tag_name, $tag_id, $tag_classes, $attributes) {
+    $exp->handler( function($tag_name, $tag_id, $tag_classes, $attributes) {
 
-        $tag_node = Create::a( Haiku_Tag::class )->with( $tag_name );
+        $tag_node = new Haiku_Tag( $tag_name );
 
         if( $attributes === null ) {
             $attributes = [];
@@ -296,33 +305,33 @@ $parser->expression( "explicit_tag",  function() {
 
 });
 
-$parser->expression( "implicit_div",  function() {
+$parser->expression( "implicit_div",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->jquery_id()
 
-                ->opt( $this->jquery_classes() )
+                ->opt( $exp->jquery_classes() )
 
                 ->space()
 
-                ->opt( $this->tag_attributes_list() )
+                ->opt( $exp->tag_attributes_list() )
 
             ->or()
-                ->opt( $this->jquery_id() )
+                ->opt( $exp->jquery_id() )
 
                 ->jquery_classes()
 
                 ->space()
 
-                ->opt( $this->tag_attributes_list() );
+                ->opt( $exp->tag_attributes_list() );
 
     });
 
-    $this->handler( function($tag_id, $tag_classes, $attributes) {
+    $exp->handler( function($tag_id, $tag_classes, $attributes) {
 
-        $tag_node = Create::a( Haiku_Tag::class )->with( "div" );
+        $tag_node = new Haiku_Tag( "div" );
 
         if( $attributes === null ) {
             $attributes = [];
@@ -349,15 +358,15 @@ $parser->expression( "implicit_div",  function() {
 
 });
 
-$parser->expression( "tag_name",  function() {
+$parser->expression( "tag_name",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->regex( "/([0-9a-zA-z]+)/" );
+        $exp ->regex( "/([0-9a-zA-z]+)/" );
 
     });
 
-    $this->handler( function($tag_string) {
+    $exp->handler( function($tag_string) {
 
         return $tag_string;
 
@@ -365,15 +374,15 @@ $parser->expression( "tag_name",  function() {
 
 });
 
-$parser->expression( "jquery_id",  function() {
+$parser->expression( "jquery_id",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->str( "#" ) ->html_name();
+        $exp ->str( "#" ) ->html_name();
 
     });
 
-    $this->handler( function($id) {
+    $exp->handler( function($id) {
 
         return $id;
 
@@ -381,18 +390,18 @@ $parser->expression( "jquery_id",  function() {
 
 });
 
-$parser->expression( "jquery_classes",  function() {
+$parser->expression( "jquery_classes",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->jquery_class() ->jquery_classes()
             ->or()
             ->jquery_class();
 
     });
 
-    $this->handler( function($class, $classes = null) {
+    $exp->handler( function($class, $classes = null) {
 
         if( $classes === null ) {
             return $class;
@@ -405,15 +414,15 @@ $parser->expression( "jquery_classes",  function() {
 
 });
 
-$parser->expression( "jquery_class",  function() {
+$parser->expression( "jquery_class",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->str( "." ) ->html_name();
+        $exp ->str( "." ) ->html_name();
 
     });
 
-    $this->handler( function($class) {
+    $exp->handler( function($class) {
 
         return $class;
 
@@ -421,18 +430,18 @@ $parser->expression( "jquery_class",  function() {
 
 });
 
-$parser->expression( "tag_attributes_list",  function() {
+$parser->expression( "tag_attributes_list",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->attribute() ->space() ->str( "," ) ->blank() ->tag_attributes_list()
             ->or()
             ->attribute();
 
     });
 
-    $this->handler( function($attribute, $attribute_list = null) {
+    $exp->handler( function($attribute, $attribute_list = null) {
 
         if( $attribute_list === null ) {
             return  $attribute;
@@ -444,18 +453,18 @@ $parser->expression( "tag_attributes_list",  function() {
 
 });
 
-$parser->expression( "attribute",  function() {
+$parser->expression( "attribute",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->html_name()
             ->space() ->str( "=" ) ->space()
             ->attribute_value();
 
     });
 
-    $this->handler( function($name, $value) {
+    $exp->handler( function($name, $value) {
 
         return [ $name => $value ];
 
@@ -463,15 +472,15 @@ $parser->expression( "attribute",  function() {
 
 });
 
-$parser->expression( "attribute_value",  function() {
+$parser->expression( "attribute_value",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->string_literal();
+        $exp ->string_literal();
 
     });
 
-    $this->handler( function($string) {
+    $exp->handler( function($string) {
 
         return $string;
 
@@ -481,74 +490,74 @@ $parser->expression( "attribute_value",  function() {
 
 /// Statements
 
-$parser->expression( "bracked_statement",  function() {
+$parser->expression( "bracked_statement",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this ->regex( "/-(.+) do/" ) ->space();
+        $exp ->regex( "/-(.+) do/" ) ->space();
 
     });
 
-    $this->handler( function($text) {
+    $exp->handler( function($text) {
 
-        return Create::a( Haiku_Bracked_Statement::class )->with( trim( $text ) );
+        return new Haiku_Bracked_Statement( trim( $text ) );
 
     });
 
 });
 
-$parser->expression( "unescaped_text",  function() {
+$parser->expression( "unescaped_text",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->regex( "/!=\s*\{\{(.+)\}\}/sU" ) ->space()
             ->or()
             ->regex( "/!=(.+)(?=\n|$)/" );
 
     });
 
-    $this->handler( function($text) {
+    $exp->handler( function($text) {
 
-        return Create::a( Haiku_PHP_Echoed_Expression::class )->with( trim( $text ), false );
+        return new Haiku_PHP_Echoed_Expression( trim( $text ), false );
 
     });
 
 });
 
-$parser->expression( "escaped_text",  function() {
+$parser->expression( "escaped_text",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->regex( "/=\s*\{\{(.+)\}\}/sU" ) ->space()
             ->or()
             ->regex( "/=(.+)(?=\n|$)/" );
 
     });
 
-    $this->handler( function($text) {
+    $exp->handler( function($text) {
 
-        return Create::a( Haiku_PHP_Echoed_Expression::class )->with( trim( $text ) );
+        return new Haiku_PHP_Echoed_Expression( trim( $text ) );
 
     });
 
 });
 
-$parser->expression( "php_statement",  function() {
+$parser->expression( "php_statement",  function($exp) {
 
-    $this->matcher( function() {
+    $exp->matcher( function($exp) {
 
-        $this
+        $exp
             ->regex( "/-\s*\{\{(.+)\}\}/sU" ) ->space()
             ->or()
             ->regex( "/-(.+)(?=\n|$)/" );
 
     });
 
-    $this->handler( function($text) {
+    $exp->handler( function($text) {
 
-        return Create::a( Haiku_PHP_Expression::class )->with( trim( $text ) );
+        return new Haiku_PHP_Expression( trim( $text ) );
 
     });
 
@@ -556,9 +565,9 @@ $parser->expression( "php_statement",  function() {
 
 /// Interpolated expressions
 
-$parser->expression( "html_name",  function() {
+$parser->expression( "html_name",  function($exp) {
 
-    $this->processor( function() {
+    $exp->processor( function() {
 
         $char = $this->peek_char();
 
@@ -605,7 +614,7 @@ $parser->expression( "html_name",  function() {
 
     });
 
-    $this->handler( function($tag_string) {
+    $exp->handler( function($tag_string) {
 
         return $tag_string;
 
@@ -613,9 +622,9 @@ $parser->expression( "html_name",  function() {
 
 });
 
-$parser->expression( "string_literal",  function() {
+$parser->expression( "string_literal",  function($exp) {
 
-    $this->processor( function() {
+    $exp->processor( function() {
 
         if( $this->peek_char() != '"' ) {
             return false;
@@ -678,7 +687,7 @@ $parser->expression( "string_literal",  function() {
 
     });
 
-    $this->handler( function($string) {
+    $exp->handler( function($string) {
 
         return $string;
 
@@ -696,7 +705,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
         $char = "spaces";
     };
 
-    throw Create::an( Unmatched_Indentation_Error::class )->with(
+    throw new Unmatched_Indentation_Error(
             "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->current_line()} column: {$this->current_column()}."
         );
 
@@ -704,7 +713,7 @@ $parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $uni
 
 $parser->def( "raise_not_unique_indentation_char_error",  function() {
 
-    throw Create::an( Not_Unique_Indentation_Char_Error::class )->with(
+    throw new Not_Unique_Indentation_Char_Error(
             "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
@@ -712,7 +721,7 @@ $parser->def( "raise_not_unique_indentation_char_error",  function() {
 
 $parser->def( "raise_indentation_char_missmatch_error",  function($used_chars, $missmatched_chars) {
 
-    throw Create::an( Indentation_Char_Missmatch_Error::class )->with(
+    throw new Indentation_Char_Missmatch_Error(
             "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->current_line()} column: {$this->current_column()}."
     );
 
@@ -722,7 +731,7 @@ $parser->def( "raise_invalid_indentation_increment_error",  function() {
 
     $line_index = $this->current_line() - 1;
 
-    throw Create::an( Invalid_Indentation_Increment_Error::class )->with(
+    throw new Invalid_Indentation_Increment_Error(
             "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->current_column()}."
     );
 

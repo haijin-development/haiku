@@ -2,8 +2,6 @@
 
 namespace Haijin\Haiku;
 
-use Haijin\Instantiator\Create;
-
 class Evaluation_Sandbox
 {
     public function evaluate_file($filename, $variables)

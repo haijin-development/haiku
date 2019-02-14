@@ -27,7 +27,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_pretty_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Not_Unique_Indentation_Char_Error::class,
+                \Haijin\Haiku\Errors\Not_Unique_Indentation_Char_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -55,7 +55,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_pretty_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Indentation_Char_Missmatch_Error::class,
+                \Haijin\Haiku\Errors\Indentation_Char_Missmatch_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -83,7 +83,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_pretty_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Unmatched_Indentation_Error::class,
+                \Haijin\Haiku\Errors\Unmatched_Indentation_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -111,7 +111,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_pretty_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Invalid_Indentation_Increment_Error::class,
+                \Haijin\Haiku\Errors\Invalid_Indentation_Increment_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()

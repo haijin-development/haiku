@@ -1,6 +1,6 @@
 <?php
 
-namespace Haijin\Haiku;
+namespace Haijin\Haiku\Dom;
 
 class Haiku_Document extends Haiku_Node
 {

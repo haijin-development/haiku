@@ -1,8 +1,7 @@
 <?php
 
-namespace Haijin\Haiku;
+namespace Haijin\Haiku\Dom;
 
-use Haijin\Instantiator\Create;
 use Haijin\Dictionary;
 
 class Haiku_Tag extends Haiku_Node
@@ -15,7 +14,7 @@ class Haiku_Tag extends Haiku_Node
         parent::__construct();
 
         $this->tag = $tag;
-        $this->attributes = Create::a( Dictionary::class ) ->with();
+        $this->attributes = new Dictionary();
     }
 
     public function set_attribute($attribute_name, $attribute_value)

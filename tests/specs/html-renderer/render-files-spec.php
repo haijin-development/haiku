@@ -5,15 +5,9 @@ use Haijin\File_Path;
 
 $spec->describe( "When rendering a haiku template file", function() {
 
-    $this->after_all( function() {
-
-        ( new File_Path( $this->cache_folder ) )->delete();
-
-    });
-
     $this->let( "cache_folder", function() {
 
-        return "tests/cache";
+        return "tests/tmp/cache";
 
     });
 
@@ -29,7 +23,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             $renderer->cache_folder = $this->cache_folder;
 
-        }, $this );
+        });
 
     });
 
@@ -135,7 +129,7 @@ $spec->describe( "When rendering a haiku template file", function() {
                 $this->renderer->render_file( $this->input_file );
 
             }) ->to() ->raise(
-                \Haijin\Haiku\File_Not_Found_Error::class,
+                \Haijin\Haiku\Errors\File_Not_Found_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() )

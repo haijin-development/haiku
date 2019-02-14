@@ -37,27 +37,27 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->it( "has the given cache folder", function() {
 
-            $this->renderer->configure( function() {
+            $this->renderer->configure( function($renderer) {
 
-                $this->cache_folder = "tmp/cache";
+                $renderer->cache_folder = "tests/tmp/cache";
 
             });
 
             $this->expect( $this->renderer->get_cache_folder() )
-                    ->to() ->equal( "tmp/cache" );
+                    ->to() ->equal( "tests/tmp/cache" );
 
         });
 
         $this->it( "has a default manifest filename", function() {
 
-            $this->renderer->configure( function() {
+            $this->renderer->configure( function($renderer) {
 
-                $this->cache_folder = "tmp/cache";
+                $renderer->cache_folder = "tests/tmp/cache";
 
             });
 
             $this->expect( $this->renderer->get_manifest_filename() )
-                    ->to() ->equal( "tmp/cache/cached_file_manifest.json" );
+                    ->to() ->equal( "tests/tmp/cache/cached_file_manifest.json" );
 
         });
 
@@ -67,19 +67,19 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->it( "has the given cache folder", function() {
 
-            $this->renderer->configure( function() {
+            $this->renderer->configure( function($renderer) {
 
-                $this->cache_folder = "tmp/cache";
-                $this->cache_manifest_filename = "another-folder/manifest";
-                $this->pretty_html = true;
+                $renderer->cache_folder = "tests/tmp/cache";
+                $renderer->cache_manifest_filename = "tests/tmp/another-folder/manifest";
+                $renderer->pretty_html = true;
 
             });
 
             $this->expect( $this->renderer->get_cache_folder() )
-                    ->to() ->equal( "tmp/cache" );
+                    ->to() ->equal( "tests/tmp/cache" );
 
             $this->expect( $this->renderer->get_manifest_filename() )
-                    ->to() ->equal( "another-folder/manifest" );
+                    ->to() ->equal( "tests/tmp/another-folder/manifest" );
 
             $this->expect( $this->renderer->is_pretty_html() )
                 ->to()->be() ->true();
