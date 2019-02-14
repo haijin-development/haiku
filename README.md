@@ -1,13 +1,13 @@
 # Haijin Haiku
 
-The most simple template engine possible, inspired in Ruby's Slim.
+The most simple template engine possible inspired in Ruby's [Slim](http://slim-lang.com/) sintax.
 
 [![Latest Stable Version](https://poser.pugx.org/haijin/haiku/version)](https://packagist.org/packages/haijin/haiku)
 [![Latest Unstable Version](https://poser.pugx.org/haijin/haiku/v/unstable)](https://packagist.org/packages/haijin/haiku)
 [![Build Status](https://travis-ci.org/haijin-development/php-haiku.svg?branch=master)](https://travis-ci.org/haijin-development/php-haiku)
 [![License](https://poser.pugx.org/haijin/haiku/license)](https://packagist.org/packages/haijin/haiku)
 
-### Version 0.0.1
+### Version 0.0.2
 
 This library is under active development and no stable version was released yet.
 
@@ -58,14 +58,16 @@ Example of a haiku template:
 html
     head
     body.container
+
         div#haiku.poem data-id= "1"
-            = "Entrar al ciruelo"
+            = "On the plum tree"
             br
-            = "en base a olfato"
+            = "one blossom, one blossom worth"
             br
-            = "en base a ternura."
-        div.source data-id= "1", data-author= "Alberto Silva"
-            = "Traducción de Alberto Silva - El libro del haiku"
+            = "of warmth."
+
+        div.source data-id= "1", data-author= "Hattori Ransetsu"
+            = "Hattori Ransetsu"
 ```
 
 <a name="c-3"></a>
@@ -97,11 +99,11 @@ html lang = "en"
 
     body
         p
-            = "Este camino"
+            = "On the plum tree"
         p
-            = "ya nadie lo recorre"
+            = "one blossom, one blossom worth"
         p
-            = "ni siquiera el ocaso."
+            = "of warmth."
 
     script src = "https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
 ```
@@ -203,11 +205,11 @@ Render text with operand `=`:
 ```
 body
     p
-        = "Este camino"
+        = "On the plum tree"
     p
-        = "ya nadie lo recorre"
+        = "one blossom, one blossom worth"
     p
-        = "ni siquiera el ocaso."
+        = "of warmth."
 ```
 
 `=` will escape html characters, so it's safe to render dynamic input from external sources like query parameters and databases.
@@ -245,7 +247,7 @@ Evaluate multiple lines of PHP code with:
 ```
 - {{
     $title = "Haiku template";
-    $haiku = [ "Este camino", "ya nadie lo recorre", "ni siquiera el ocaso." ];
+    $haiku = [ "On the plum tree", "one blossom, one blossom worth", "of warmth." ];
 }}
 
 body
@@ -284,8 +286,6 @@ will output
 <a href="/...">
 </a>
 ```
-
-The main difference between PHP and Haiku templates could be summarize in the following statement: PHP prefers `$` for variables, [packagist](https://packagist.org/) likes big elephants to do the hard work and haiku loves `{{}}` for interpolation.
 
 <a name="c-3-1-7"></a>
 #### Loops
@@ -411,7 +411,7 @@ to PHP scripts of the form:
 <html><body><?php echo htmlspecialchars( "A haiku template from {$author}" ); ?></body></html>
 ```
 
-and stores them in the given cache folder.
+and stores them in the configured cache folder.
 
 Later requests to parse the `sample.haiku.html` file are not translated again, instead the PHP cached file is evaluated to generate the HTML unless its haiku source file changed.
 

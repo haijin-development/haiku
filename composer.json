@@ -1,8 +1,8 @@
 {
+    "minimum-stability": "dev",
     "name": "haijin/haiku",
     "description": "The most simple template engine possible, inspired in Ruby's Slim.",
     "keywords": ["html", "template"],
-    "version": "0.0.1",
     "type": "library",
     "license": "MIT",
     "homepage": "https://github.com/haijin-development/php-template",
@@ -19,13 +19,43 @@
             "php": "7.1"
         }
     },
+    "repositories": {
+        "haijin/specs": {
+            "type": "path",
+            "url": "../php-specs",
+            "options": {
+            "symlink": true
+            }
+        },
+        "haijin/tools": {
+            "type": "path",
+            "url": "../php-tools",
+            "options": {
+            "symlink": true
+            }
+        },
+        "haijin/instantiator": {
+            "type": "path",
+            "url": "../php-instantiator",
+            "options": {
+            "symlink": true
+            }
+        },
+        "haijin/parser": {
+            "type": "path",
+            "url": "../php-parser",
+            "options": {
+            "symlink": true
+            }
+        }
+    },
     "require": {
-        "haijin/tools": "^1.1",
-        "haijin/instantiator": "^1.0",
-        "haijin/parser": "^1.0"
+        "haijin/tools": "dev-development",
+        "haijin/instantiator": "dev-development",
+        "haijin/parser": "dev-development"
     },
     "require-dev": {
-        "haijin/specs": "^1.1"
+        "haijin/specs": "dev-development"
     },
     "autoload": {
         "psr-4": {

@@ -39,12 +39,12 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             $this->renderer->configure( function() {
 
-                $this->cache_folder = "tmp/cache";
+                $this->cache_folder = "tests/tmp/cache";
 
             });
 
             $this->expect( $this->renderer->get_cache_folder() )
-                    ->to() ->equal( "tmp/cache" );
+                    ->to() ->equal( "tests/tmp/cache" );
 
         });
 
@@ -52,12 +52,12 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             $this->renderer->configure( function() {
 
-                $this->cache_folder = "tmp/cache";
+                $this->cache_folder = "tests/tmp/cache";
 
             });
 
             $this->expect( $this->renderer->get_manifest_filename() )
-                    ->to() ->equal( "tmp/cache/cached_file_manifest.json" );
+                    ->to() ->equal( "tests/tmp/cache/cached_file_manifest.json" );
 
         });
 
@@ -69,17 +69,17 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             $this->renderer->configure( function() {
 
-                $this->cache_folder = "tmp/cache";
-                $this->cache_manifest_filename = "another-folder/manifest";
+                $this->cache_folder = "tests/tmp/cache";
+                $this->cache_manifest_filename = "tests/tmp/another-folder/manifest";
                 $this->pretty_html = true;
 
             });
 
             $this->expect( $this->renderer->get_cache_folder() )
-                    ->to() ->equal( "tmp/cache" );
+                    ->to() ->equal( "tests/tmp/cache" );
 
             $this->expect( $this->renderer->get_manifest_filename() )
-                    ->to() ->equal( "another-folder/manifest" );
+                    ->to() ->equal( "tests/tmp/another-folder/manifest" );
 
             $this->expect( $this->renderer->is_pretty_html() )
                 ->to()->be() ->true();

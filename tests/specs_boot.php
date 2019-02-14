@@ -1,10 +1,18 @@
 <?php
 
+use Haijin\File_Path;
+
 \Haijin\Specs\Specs_Runner::configure( function($specs) {
 
-    $this->let( "templates_folder", function() {
+    $this->before_each( function() {
 
-        return __DIR__ . "/../templates";
+        ( new File_Path( "tests/tmp" ) )->delete();
+
+    });
+
+    $this->after_all( function() {
+
+        ( new File_Path( "tests/tmp" ) )->delete();
 
     });
 

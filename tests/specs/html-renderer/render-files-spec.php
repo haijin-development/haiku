@@ -5,15 +5,9 @@ use Haijin\File_Path;
 
 $spec->describe( "When rendering a haiku template file", function() {
 
-    $this->after_all( function() {
-
-        ( new File_Path( $this->cache_folder ) )->delete();
-
-    });
-
     $this->let( "cache_folder", function() {
 
-        return "tests/cache";
+        return "tests/tmp/cache";
 
     });
 
