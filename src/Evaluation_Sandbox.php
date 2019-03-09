@@ -6,27 +6,35 @@ class Evaluation_Sandbox
 {
     public function evaluate_file($filename, $variables)
     {
-        extract( $variables );
+        try {
 
-        ob_start();
+            extract( $variables );
 
-        $this_object = $this;
+            ob_start();
 
-        require( $filename );
+            require( $filename );
 
-        return ob_get_clean();
+        } finally {
+
+            return ob_get_clean();
+
+        }
     }
 
     public function evaluate($php_script, $variables)
     {
-        extract( $variables );
+        try {
 
-        ob_start();
+            extract( $variables );
 
-        $this_object = $this;
+            ob_start();
 
-        eval( "?>\n" . $php_script );
+            eval( "?>\n" . $php_script );
 
-        return ob_get_clean();
+        } finally {
+
+            return ob_get_clean();
+
+        }
     }
 }

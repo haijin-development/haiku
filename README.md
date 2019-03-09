@@ -7,7 +7,15 @@ The most simple template engine possible inspired in Ruby's [Slim](http://slim-l
 [![Build Status](https://travis-ci.org/haijin-development/php-haiku.svg?branch=master)](https://travis-ci.org/haijin-development/php-haiku)
 [![License](https://poser.pugx.org/haijin/haiku/license)](https://packagist.org/packages/haijin/haiku)
 
-### Version 0.0.2
+**Highlights**
+
+* Minimalist sintax.
+* Uses indentation instead of closing tags.
+* Supports PHP expressions. No input filters nor a different sintax to evaluate logic.
+* Compiles `haiku` files to regular cached PHP files for efficiency.
+* Minimum amount of features and logic. Delegates the inclussion of sub-templates to the view or application using this library.
+
+### Version 1.0.0
 
 This library is under active development and no stable version was released yet.
 
@@ -42,7 +50,7 @@ Include this library in your project `composer.json` file:
 
     "require-dev": {
         ...
-        "haijin/haiku": "^0.0.1",
+        "haijin/haiku": "^1.0",
         ...
     },
 

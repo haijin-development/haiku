@@ -150,6 +150,12 @@ class Renderer
 
     protected function ensure_manifest_folder_exists()
     {
+        if( $this->get_manifest_filename() === null ) {
+            throw new \RuntimeException(
+                "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
+            );
+        }
+
         $folder = ( new File_Path( $this->get_manifest_filename() ) )->back();
 
         if( $folder->exists_folder() ) {
@@ -163,6 +169,12 @@ class Renderer
 
     protected function ensure_cache_folder_exists()
     {
+        if( $this->get_cache_folder() === null ) {
+            throw new \RuntimeException(
+                "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
+            );
+        }
+
         $folder = new File_Path( $this->get_cache_folder() );
 
         if( $folder->exists_folder() ) {
