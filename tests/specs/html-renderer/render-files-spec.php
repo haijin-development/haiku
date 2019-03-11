@@ -2,6 +2,7 @@
 
 use Haijin\Haiku\Renderer;
 use Haijin\File_Path;
+use Haijin\Haiku\Errors\File_Not_Found_Error;
 
 $spec->describe( "When rendering a haiku template file", function() {
 
@@ -129,7 +130,7 @@ $spec->describe( "When rendering a haiku template file", function() {
                 $this->renderer->render_file( $this->input_file );
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Errors\File_Not_Found_Error::class,
+                File_Not_Found_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() )
@@ -199,7 +200,7 @@ $spec->describe( "When rendering a haiku template file", function() {
                 $renderer->cache_folder = $this->cache_folder;
                 $renderer->pretty_html = true;
 
-            }, $this );
+            });
 
         });
 

@@ -96,9 +96,13 @@ class Renderer
 
             return $this->evaluate_php_file( $php_filename, $variables );
 
-        }, $this );
+        });
 
-        return $this->render( $this->get_file_contents( $filename ), $variables, $filename );
+        return $this->render(
+            $this->get_file_contents( $filename ),
+            $variables,
+            $filename
+        );
     }
 
     protected function evaluate_php_file($php_filename, $variables)
@@ -198,6 +202,6 @@ class Renderer
 
     protected function raise_could_not_create_manifest_folder_error($folder)
     {
-        throw new \Exception( "Could not create manifest folder '$folder'." );
+        throw new \RuntimeException( "Could not create manifest folder '$folder'." );
     }
 }

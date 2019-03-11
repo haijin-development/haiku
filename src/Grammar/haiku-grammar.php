@@ -90,7 +90,7 @@ $parser->expression( "lines_list",  function($exp) {
 
                 $nodes->add( $each_node );
 
-            }, $this );
+            });
 
             return $nodes;
 
@@ -114,7 +114,7 @@ $parser->expression( "lines_list",  function($exp) {
                     $nodes->add( $each_node );
                 }
 
-            }, $this );
+            });
 
             return $nodes;
 
@@ -127,11 +127,11 @@ $parser->expression( "lines_list",  function($exp) {
             $nodes_list->each_do( function($each_node) use($node, $nodes) {
 
                 if( $node->indentation == $each_node->indentation ) {
-                    throw new \Exception( "Invalid indentation found" );
+                    throw new \RuntimeException( "Invalid indentation found" );
                 }
 
                 if( $node->indentation < $each_node->indentation ) {
-                    throw new \Exception( "Invalid indentation found" );
+                    throw new \RuntimeException( "Invalid indentation found" );
                 }
 
                 $nodes->add( $each_node );
@@ -575,11 +575,12 @@ $parser->expression( "html_name",  function($exp) {
             return false;
         }
 
-        $char = $this->next_char();
-
         $literal = "";
 
         while( $this->not_end_of_stream() ) {
+
+            $char = $this->next_char();
+
             if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
                 $literal .= "<?php echo htmlspecialchars(";
 
@@ -604,8 +605,6 @@ $parser->expression( "html_name",  function($exp) {
             }
 
             $literal .= \htmlspecialchars( $char );
-
-            $char = $this->next_char();
         }
 
         $this->set_result( $literal );

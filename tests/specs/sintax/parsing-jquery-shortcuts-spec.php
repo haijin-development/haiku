@@ -218,4 +218,26 @@ $spec->describe( "When parsing tags with jquery shortcuts", function() {
 
     });
 
+    $this->describe( "parses a jquery id with no cr ending", function() {
+
+        $this->let( "input", function() {
+            return
+'div#item-1';
+        });
+
+        $this->let( "expected_html", function() {
+            return
+'<div id="item-1" />';
+        });
+
+        $this->it( "parses the input", function() {
+
+            $html = $this->parser->parse_string( $this->input )->to_html();
+
+            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+
+        });
+
+    });
+
 });

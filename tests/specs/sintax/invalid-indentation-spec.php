@@ -2,6 +2,10 @@
 
 use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
+use Haijin\Haiku\Errors\Not_Unique_Indentation_Char_Error;
+use Haijin\Haiku\Errors\Indentation_Char_Missmatch_Error;
+use \Haijin\Haiku\Errors\Unmatched_Indentation_Error;
+use \Haijin\Haiku\Errors\Invalid_Indentation_Increment_Error;
 
 $spec->describe( "When parsing indentations", function() {
 
@@ -27,7 +31,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Errors\Not_Unique_Indentation_Char_Error::class,
+                Not_Unique_Indentation_Char_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -55,7 +59,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Errors\Indentation_Char_Missmatch_Error::class,
+                Indentation_Char_Missmatch_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -83,7 +87,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Errors\Unmatched_Indentation_Error::class,
+                Unmatched_Indentation_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()
@@ -111,7 +115,7 @@ $spec->describe( "When parsing indentations", function() {
                 $this->parser->parse_string( $this->input )->to_html();
 
             }) ->to() ->raise(
-                \Haijin\Haiku\Errors\Invalid_Indentation_Increment_Error::class,
+                Invalid_Indentation_Increment_Error::class,
                 function($error) {
 
                     $this->expect( $error->getMessage() ) ->to()

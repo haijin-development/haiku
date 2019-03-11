@@ -37,7 +37,7 @@ class Haiku_Node
 
             $this->add_child( $child );
 
-        }, $this );
+        });
 
         return $this;
     }

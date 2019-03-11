@@ -1,6 +1,7 @@
 <?php
 
 use Haijin\Parser\Parser;
+use Haijin\Parser\Unexpected_Expression_Error;
 use Haijin\Haiku\Haiku_Parser_Definition;
 
 $spec->describe( "When parsing an invalid expression", function() {
@@ -24,7 +25,7 @@ $spec->describe( "When parsing an invalid expression", function() {
             $this->parser->parse_string( $this->input )->to_html();
 
         }) ->to() ->raise(
-            \Haijin\Parser\Unexpected_Expression_Error::class,
+            Unexpected_Expression_Error::class,
             function($error) {
 
                 $this->expect( $error->getMessage() ) ->to() ->equal(
