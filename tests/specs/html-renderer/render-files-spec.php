@@ -2,7 +2,8 @@
 
 use Haijin\Haiku\Renderer;
 use Haijin\File_Path;
-use Haijin\Haiku\Errors\File_Not_Found_Error;
+use Haijin\Errors\File_Not_Found_Error;
+use Haijin\Errors\Haijin_Error;
 
 $spec->describe( "When rendering a haiku template file", function() {
 
@@ -97,7 +98,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         $this->it( "updates the cache", function() {
 
-            $this->input_file->write_contents( "div" );
+            $this->input_file->write_file_contents( "div" );
 
             $html = $this->renderer->render_file( $this->input_file->to_string() );
 
@@ -105,7 +106,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             sleep( 1 );
 
-            $this->input_file->write_contents( "div\n\ta" );
+            $this->input_file->write_file_contents( "div\n\ta" );
 
             $html = $this->renderer->render_file( $this->input_file->to_string() );
 
@@ -158,11 +159,21 @@ $spec->describe( "When rendering a haiku template file", function() {
     '<html><head /><body><div>Entrar al ciruelo<br />en base a olfato<br />en base a ternura.</div><div>Traducción de Alberto Silva - El libro del haiku</div></body></html>';
         });
 
-        $this->it( "renders the template", function() {
+        $this->it( "raises an error", function() {
 
-            $html = $this->renderer->render_file( $this->input_file );
+            $this->expect( function() {
 
-            $this->expect( $html ) ->to() ->equal( $this->expected_html );
+                $this->renderer->render_file( $this->input_file );
+
+            }) ->to() ->raise(
+                Haijin_Error::class,
+                function($error) {
+
+                    $this->expect( $error->getMessage() ) ->to() ->match(
+                        "/Could not find a suiteable cached named for file '[\/]home[\/].+[\/]samples[\/]sample.haiku.html'./"
+                    );
+
+            });
 
         });
 
@@ -191,7 +202,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     });
 
-    $this->xdescribe( "when the file has php errors", function() {
+    $this->describe( "when the file has php errors", function() {
 
         $this->let( "renderer", function() {
 
@@ -210,7 +221,7 @@ $spec->describe( "When rendering a haiku template file", function() {
 
         });
 
-        $this->it( "raises an error", function() {
+        $this->xit( "raises an error", function() {
 
             $this->renderer->render_file( $this->input_file );
 

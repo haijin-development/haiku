@@ -127,11 +127,11 @@ $parser->expression( "lines_list",  function($exp) {
             $nodes_list->each_do( function($each_node) use($node, $nodes) {
 
                 if( $node->indentation == $each_node->indentation ) {
-                    throw new \RuntimeException( "Invalid indentation found" );
+                    throw new Haijin_Error( "Invalid indentation found" );
                 }
 
                 if( $node->indentation < $each_node->indentation ) {
-                    throw new \RuntimeException( "Invalid indentation found" );
+                    throw new Haijin_Error( "Invalid indentation found" );
                 }
 
                 $nodes->add( $each_node );

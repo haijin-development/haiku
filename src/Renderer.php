@@ -5,7 +5,8 @@ namespace Haijin\Haiku;
 use Haijin\Parser\Parser;
 use Haijin\Files_Cache;
 use Haijin\File_Path;
-use  Haijin\Haiku\Errors\File_Not_Found_Error;
+use Haijin\Errors\File_Not_Found_Error;
+use Haijin\Errors\Haijin_Error;
 
 class Renderer
 {
@@ -76,6 +77,10 @@ class Renderer
         $this->ensure_manifest_folder_exists();
         $this->ensure_cache_folder_exists();
 
+        if( is_string( $filename ) ) {
+            $filename = new File_Path( $filename );
+        }
+
         return $this->cache->locking_do( function($cache) use($filename, $variables) {
 
             if( $cache->needs_caching( $filename ) ) {
@@ -84,7 +89,17 @@ class Renderer
                     $this->get_file_contents( $filename )
                 );
 
-                $cache->cache_file_contents(
+                if( $filename->is_absolute() ) {
+
+                    throw new Haijin_Error( "Could not find a suiteable cached named for file '{$filename}'." );
+
+                } else {
+
+                    $cached_filename = $filename;
+
+                }
+
+                $cache->write_file_contents(
                     $filename,
                     $php_contents,
                     $filename
@@ -142,7 +157,7 @@ class Renderer
             $this->raise_file_not_found_error( $filename );
         }
 
-        return $filepath->file_contents();
+        return $filepath->read_file_contents();
     }
 
     /// Creating instances
@@ -155,7 +170,7 @@ class Renderer
     protected function ensure_manifest_folder_exists()
     {
         if( $this->get_manifest_filename() === null ) {
-            throw new \RuntimeException(
+            throw new Haijin_Error(
                 "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
             );
         }
@@ -174,7 +189,7 @@ class Renderer
     protected function ensure_cache_folder_exists()
     {
         if( $this->get_cache_folder() === null ) {
-            throw new \RuntimeException(
+            throw new Haijin_Error(
                 "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
             );
         }
@@ -202,6 +217,6 @@ class Renderer
 
     protected function raise_could_not_create_manifest_folder_error($folder)
     {
-        throw new \RuntimeException( "Could not create manifest folder '$folder'." );
+        throw new Haijin_Error( "Could not create manifest folder '$folder'." );
     }
 }

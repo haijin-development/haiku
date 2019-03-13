@@ -56,8 +56,8 @@ $spec->describe( "When rendering a haiku template file", function() {
 
             });
 
-            $this->expect( $this->renderer->get_manifest_filename() )
-                    ->to() ->equal( "tests/tmp/cache/cached_file_manifest.json" );
+            $this->expect( $this->renderer->get_manifest_filename()->to_string() ) ->to()
+                ->match( "/^.+tests[\/]tmp[\/]cache[\/]cached_file_manifest.json$/" );
 
         });
 

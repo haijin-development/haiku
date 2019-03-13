@@ -2,7 +2,7 @@
 
 use Haijin\Parser\Parser;
 use Haijin\Haiku\Haiku_Parser_Definition;
-use Haijin\Parser\Unexpected_Expression_Error;
+use Haijin\Parser\Errors\Unexpected_Expression_Error;
 
 
 $spec->describe( "When parsing an invalid expression", function() {
