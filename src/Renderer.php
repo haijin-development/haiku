@@ -175,15 +175,13 @@ class Renderer
             );
         }
 
-        $folder = ( new File_Path( $this->get_manifest_filename() ) )->back();
+        $folder = $this->get_manifest_filename()->back();
 
-        if( $folder->exists_folder() ) {
+        if( $folder->exists_folder() || $folder->is_empty() ) {
             return;
         }
 
-        if( $folder->is_empty() || $folder->create_folder_path() === false ) {
-            $this->raise_could_not_create_manifest_folder_error( $folder->to_string() );
-        }
+        $folder->create_folder_path();
     }
 
     protected function ensure_cache_folder_exists()
@@ -196,13 +194,11 @@ class Renderer
 
         $folder = new File_Path( $this->get_cache_folder() );
 
-        if( $folder->exists_folder() ) {
+        if( $folder->exists_folder() || $folder->is_empty() ) {
             return;
         }
 
-        if( $folder->is_empty() || $folder->create_folder_path() === false ) {
-            $this->raise_could_not_create_cache_folder_error( $folder->to_string() );
-        }
+        $folder->create_folder_path();
     }
 
     /// Raising errors
@@ -213,10 +209,5 @@ class Renderer
             "File '{$filename}' not found.",
             $filename
         );
-    }
-
-    protected function raise_could_not_create_manifest_folder_error($folder)
-    {
-        throw new Haijin_Error( "Could not create manifest folder '$folder'." );
     }
 }

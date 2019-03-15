@@ -329,12 +329,12 @@ will output
 #### Conditionals
 
 ```
-- if( $user != null ) do
+- if( $user !== null ) do
     div = $user->get_name() . $user->get_lastname()
 ```
 
 ```
-- if( $user == null ) do
+- if( $user === null ) do
 
     = "No user id logged in"
 
