@@ -15,29 +15,11 @@ class Haiku_Node
         $this->child_nodes = new Ordered_Collection();
     }
 
-    /// Accessing
-
-    public function last_child()
-    {
-        return $this->child_nodes[ -1 ];
-    }
-
     /// Adding children
 
     public function add_child($child)
     {
         $this->child_nodes->add( $child );
-
-        return $this;
-    }
-
-    public function add_children($children)
-    {
-        $children->each_do( function($child) {
-
-            $this->add_child( $child );
-
-        });
 
         return $this;
     }

@@ -46,7 +46,7 @@ class Renderer
         return $this->cache->get_cache_folder();
     }
 
-    public function get_manifest_filename()
+    public function get_cache_manifest_filename()
     {
         return $this->cache->get_manifest_filename();
     }
@@ -74,8 +74,8 @@ class Renderer
 
     public function render_file($filename, $variables = [])
     {
-        $this->ensure_manifest_folder_exists();
         $this->ensure_cache_folder_exists();
+        $this->ensure_manifest_folder_exists();
 
         if( is_string( $filename ) ) {
             $filename = new File_Path( $filename );
@@ -169,13 +169,13 @@ class Renderer
 
     protected function ensure_manifest_folder_exists()
     {
-        if( $this->get_manifest_filename() === null ) {
+        if( $this->get_cache_manifest_filename() === null ) {
             throw new Haijin_Error(
-                "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
+                "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
             );
         }
 
-        $folder = $this->get_manifest_filename()->back();
+        $folder = $this->get_cache_manifest_filename()->back();
 
         if( $folder->exists_folder() || $folder->is_empty() ) {
             return;
@@ -188,7 +188,7 @@ class Renderer
     {
         if( $this->get_cache_folder() === null ) {
             throw new Haijin_Error(
-                "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling configure( function($confg) {...})."
+                "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
             );
         }
 

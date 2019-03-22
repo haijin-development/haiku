@@ -4,3 +4,5 @@ composer.lock
 
 another-folder/
 tmp
+
+/coverage-report/

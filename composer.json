@@ -14,11 +14,6 @@
             "role": "developer"
         }
     ],
-    "config": {
-        "platform": {
-            "php": "7.1"
-        }
-    },
     "repositories": {
         "haijin/specs": {
             "type": "path",
@@ -43,6 +38,7 @@
         }
     },
     "require": {
+        "php": ">=7.1.0",
         "haijin/tools": "dev-development",
         "haijin/parser": "dev-development"
     },

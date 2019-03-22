@@ -229,4 +229,113 @@ $spec->describe( "When rendering a haiku template file", function() {
 
     });
 
+    $this->describe( "when the cache folder was not defined", function() {
+
+        $this->let( "renderer", function() {
+
+            return ( new Renderer() )->configure( function($renderer) {
+
+                $renderer->cache_folder = $this->cache_folder;
+                $renderer->cache_folder = null;
+
+            });
+
+        });
+
+        $this->it( "raises an error", function() {
+
+            $this->expect( function() {
+
+                $this->renderer->render_file( "tests/samples/sample.haiku.html" );
+
+            }) ->to() ->raise(
+                Haijin_Error::class,
+                function($error) {
+                    $this->expect( $error->getMessage() ) ->to() ->equal(
+                        "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
+                    );
+                }
+            );
+
+        });
+
+    });
+
+    $this->describe( "when the manifest file was not defined", function() {
+
+        $this->let( "renderer", function() {
+
+            return ( new Renderer() )->configure( function($renderer) {
+
+                $renderer->cache_folder = $this->cache_folder;
+                $renderer->cache_manifest_filename = null;
+
+            });
+
+        });
+
+        $this->it( "raises an error", function() {
+
+            $this->expect( function() {
+
+                $this->renderer->render_file( "tests/samples/sample.haiku.html" );
+
+            }) ->to() ->raise(
+                Haijin_Error::class,
+                function($error) {
+                    $this->expect( $error->getMessage() ) ->to() ->equal(
+                        "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
+                    );
+                }
+            );
+
+        });
+
+    });
+
+    $this->describe( "when the cache folder does not exist", function() {
+
+        $this->let( "renderer", function() {
+
+            return ( new Renderer() )->configure( function($renderer) {
+
+                $renderer->cache_folder = $this->cache_folder;
+
+            });
+
+        });
+
+        $this->it( "creates it", function() {
+
+            $this->renderer->render_file( "tests/samples/sample.haiku.html" );
+
+            $this->expect( $this->cache_folder ) ->to() ->be() ->a_folder();
+        });
+
+    });
+
+    $this->describe( "when the cache manifest file does not exist", function() {
+
+        $this->let( "renderer", function() {
+
+            return ( new Renderer() )->configure( function($renderer) {
+
+                $renderer->cache_folder = $this->cache_folder;
+                $renderer->cache_manifest_filename =
+                    $this->cache_folder . '/subfolder/manifest.txt';
+
+            });
+
+        });
+
+        $this->it( "creates it", function() {
+
+            $this->renderer->render_file( "tests/samples/sample.haiku.html" );
+
+            $this->expect( $this->cache_folder . '/subfolder/manifest.txt' )
+                ->to() ->be() ->a_file();
+        });
+
+    });
+
 });
