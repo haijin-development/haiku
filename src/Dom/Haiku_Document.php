@@ -6,24 +6,11 @@ class Haiku_Document extends Haiku_Node
 {
     public function to_html()
     {
-        $html = "";
-
-        foreach( $this->child_nodes->to_array() as $i => $node ) {
-            $html .= $node->to_html( 0 );
-        }
-
-        return $html;
+        return $this->child_nodes_to_html( -1 );
     }
 
     public function to_pretty_html()
     {
-        $html = "";
-
-        foreach( $this->child_nodes->to_array() as $i => $node ) {
-            $html .= $node->to_pretty_html( 0 );
-            $html .= "\n";
-        }
-
-        return $html;
+        return $this->child_nodes_to_pretty_html( -1 );
     }
 }

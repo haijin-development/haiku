@@ -82,8 +82,8 @@ $spec->describe( "When parsing an if statement", function() {
             return
 '<?php if( $variable == "123" ) { ?>
     <div />
-<?php } ?>
-<?php else { ?>
+<?php } 
+else { ?>
     <p />
 <?php } ?>
 ';
@@ -117,11 +117,11 @@ $spec->describe( "When parsing an if statement", function() {
             return
 '<?php if( $variable == "123" ) { ?>
     <div />
-<?php } ?>
-<?php elseif( $variable == "321" ) { ?>
+<?php } 
+elseif( $variable == "321" ) { ?>
     <p />
-<?php } ?>
-<?php else { ?>
+<?php } 
+else { ?>
     <a />
 <?php } ?>
 ';

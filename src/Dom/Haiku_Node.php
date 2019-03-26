@@ -36,7 +36,19 @@ class Haiku_Node
         $html = "";
 
         foreach( $this->child_nodes->to_array() as $i => $node ) {
-            $html .= $node->to_html( $indentation + 1 );
+
+            $node_html = $node->to_html( $indentation + 1 );
+
+            if( preg_match( '/^<\?php +else/', $node_html ) ) {
+
+                $html = preg_replace( '/\?>$/', '', $html );
+
+                $node_html = preg_replace( '/^<\?php +else/', 'else', $node_html );
+
+            }
+
+            $html .= $node_html;
+
         }
 
         return $html;
@@ -47,7 +59,19 @@ class Haiku_Node
         $html = "";
 
         foreach( $this->child_nodes->to_array() as $i => $node ) {
-            $html .= $node->to_pretty_html( $indentation + 1 );
+
+            $node_html = $node->to_pretty_html( $indentation + 1 );
+
+            if( preg_match( '/^<\?php +else/', $node_html ) ) {
+
+                $html = preg_replace( '/\?>$/', '', $html );
+
+                $node_html = preg_replace( '/^<\?php +else/', 'else', $node_html );
+
+            }
+
+            $html .= $node_html;
+
             $html .= "\n";
         }
 

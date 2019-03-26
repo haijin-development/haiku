@@ -26,12 +26,14 @@ $spec->describe( "When parsing an invalid expression", function() {
 
         }) ->to() ->raise(
             Unexpected_Expression_Error::class,
+
             function($error) {
 
                 $this->expect( $error->getMessage() ) ->to() ->equal(
                     'Unexpected expression "@invalid-expression". At line: 1 column: 4.'
                 );
-        });
+            }
+        );
 
     });
 
