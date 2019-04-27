@@ -2,210 +2,210 @@
 
 namespace Haijin\Haiku;
 
+use Haijin\Errors\FileNotFoundError;
+use Haijin\Errors\HaijinError;
+use Haijin\FilePath;
+use Haijin\FilesCache;
 use Haijin\Parser\Parser;
-use Haijin\Files_Cache;
-use Haijin\File_Path;
-use Haijin\Errors\File_Not_Found_Error;
-use Haijin\Errors\Haijin_Error;
 
 class Renderer
 {
     protected $cache;
-    protected $pretty_html;
+    protected $prettyHtml;
 
     /// Initializing
 
     public function __construct()
     {
-        $this->cache = new Files_Cache();
-        $this->pretty_html = false;
+        $this->cache = new FilesCache();
+        $this->prettyHtml = false;
     }
 
     /// Configuring
 
     public function configure($callable)
     {
-        $configuration_dsl = new Renderer_Configuration_DSL( $this );
+        $configurationDsl = new RendererConfigurationDSL($this);
 
-        $configuration_dsl->configure( $callable );
+        $configurationDsl->configure($callable);
 
         return $this;
     }
 
     /// Accessing
 
-    public function set_cache_folder($folder)
+    public function setCacheFolder($folder)
     {
-        $this->cache->set_cache_folder( $folder );
+        $this->cache->setCacheFolder($folder);
 
         return $this;
     }
 
-    public function get_cache_folder()
+    public function getCacheFolder()
     {
-        return $this->cache->get_cache_folder();
+        return $this->cache->getCacheFolder();
     }
 
-    public function get_cache_manifest_filename()
+    public function getCacheManifestFilename()
     {
-        return $this->cache->get_manifest_filename();
+        return $this->cache->getManifestFilename();
     }
 
-    public function set_cache_manifest_filename($filename)
+    public function setCacheManifestFilename($filename)
     {
-        $this->cache->set_manifest_filename( $filename );
+        $this->cache->setManifestFilename($filename);
 
         return $this;
     }
 
-    public function set_pretty_html($boolean)
+    public function setPrettyHtml($boolean)
     {
-        $this->pretty_html = $boolean;
+        $this->prettyHtml = $boolean;
 
         return $this;
     }
 
-    public function is_pretty_html()
+    public function isPrettyHtml()
     {
-        return $this->pretty_html;
+        return $this->prettyHtml;
     }
 
     /// Rendering
 
-    public function render_file($filename, $variables = [])
+    public function renderFile($filename, $variables = [])
     {
-        $this->ensure_cache_folder_exists();
-        $this->ensure_manifest_folder_exists();
+        $this->ensureCacheFolderExists();
+        $this->ensureManifestFolderExists();
 
-        if( is_string( $filename ) ) {
-            $filename = new File_Path( $filename );
+        if (is_string($filename)) {
+            $filename = new FilePath($filename);
         }
 
-        return $this->cache->locking_do( function($cache) use($filename, $variables) {
+        return $this->cache->lockingDo(function ($cache) use ($filename, $variables) {
 
-            if( $cache->needs_caching( $filename ) ) {
+            if ($cache->needsCaching($filename)) {
 
-                $php_contents = $this->parse_haiku(
-                    $this->get_file_contents( $filename )
+                $phpContents = $this->parseHaiku(
+                    $this->getFileContents($filename)
                 );
 
-                if( $filename->is_absolute() ) {
+                if ($filename->isAbsolute()) {
 
-                    throw new Haijin_Error( "Could not find a suiteable cached named for file '{$filename}'." );
+                    throw new HaijinError("Could not find a suiteable cached named for file '{$filename}'.");
 
                 } else {
 
-                    $cached_filename = $filename;
+                    $cachedFilename = $filename;
 
                 }
 
-                $cache->write_file_contents(
+                $cache->writeFileContents(
                     $filename,
-                    $php_contents,
+                    $phpContents,
                     $filename
                 );
 
             }
 
-            $php_filename = $this->cache->get_path_of( $filename );
+            $phpFilename = $this->cache->getPathOf($filename);
 
-            return $this->evaluate_php_file( $php_filename, $variables );
+            return $this->evaluatePhpFile($phpFilename, $variables);
 
         });
 
         return $this->render(
-            $this->get_file_contents( $filename ),
+            $this->getFileContents($filename),
             $variables,
             $filename
         );
     }
 
-    protected function evaluate_php_file($php_filename, $variables)
+    protected function evaluatePhpFile($phpFilename, $variables)
     {
-        $sandbox = new Evaluation_Sandbox();
+        $sandbox = new EvaluationSandbox();
 
-        return $sandbox->evaluate_file($php_filename, $variables);
+        return $sandbox->evaluateFile($phpFilename, $variables);
     }
 
     public function render($input, $variables = [])
     {
-        $php_script = $this->parse_haiku( $input );
+        $phpScript = $this->parseHaiku($input);
 
-        return $this->evaluate_php_script( $php_script, $variables );
+        return $this->evaluatePhpScript($phpScript, $variables);
     }
 
-    protected function parse_haiku($input)
+    protected function parseHaiku($input)
     {
-        $haiku_document = $this->new_parser()->parse_string( $input );
+        $haikuDocument = $this->newParser()->parseString($input);
 
-        return $this->pretty_html ?
-                $haiku_document->to_pretty_html() : $haiku_document->to_html();
+        return $this->prettyHtml ?
+            $haikuDocument->toPrettyHtml() : $haikuDocument->toHtml();
     }
 
-    protected function evaluate_php_script($php_script, $variables)
+    protected function evaluatePhpScript($phpScript, $variables)
     {
-        $sandbox = new Evaluation_Sandbox();
+        $sandbox = new EvaluationSandbox();
 
-        return $sandbox->evaluate($php_script, $variables);
+        return $sandbox->evaluate($phpScript, $variables);
     }
 
-    protected function get_file_contents($filename)
+    protected function getFileContents($filename)
     {
-        $filepath = new File_Path( $filename );
+        $filepath = new FilePath($filename);
 
-        if( ! $filepath->exists_file() ) {
-            $this->raise_file_not_found_error( $filename );
+        if (!$filepath->existsFile()) {
+            $this->raiseFileNotFoundError($filename);
         }
 
-        return $filepath->read_file_contents();
+        return $filepath->readFileContents();
     }
 
     /// Creating instances
 
-    protected function new_parser()
+    protected function newParser()
     {
-        return new Parser( Haiku_Parser_Definition::$definition );
+        return new Parser(HaikuParserDefinition::$definition);
     }
 
-    protected function ensure_manifest_folder_exists()
+    protected function ensureManifestFolderExists()
     {
-        if( $this->get_cache_manifest_filename() === null ) {
-            throw new Haijin_Error(
+        if ($this->getCacheManifestFilename() === null) {
+            throw new HaijinError(
                 "The manifest filename is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
             );
         }
 
-        $folder = $this->get_cache_manifest_filename()->back();
+        $folder = $this->getCacheManifestFilename()->back();
 
-        if( $folder->exists_folder() || $folder->is_empty() ) {
+        if ($folder->existsFolder() || $folder->isEmpty()) {
             return;
         }
 
-        $folder->create_folder_path();
+        $folder->createFolderPath();
     }
 
-    protected function ensure_cache_folder_exists()
+    protected function ensureCacheFolderExists()
     {
-        if( $this->get_cache_folder() === null ) {
-            throw new Haijin_Error(
-                "The cache_folder is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
+        if ($this->getCacheFolder() === null) {
+            throw new HaijinError(
+                "The cacheFolder is missing. Seems like the Renderer has not been configured. Configure it by calling \$renderer->configure( function(\$confg) {...})."
             );
         }
 
-        $folder = new File_Path( $this->get_cache_folder() );
+        $folder = new FilePath($this->getCacheFolder());
 
-        if( $folder->exists_folder() || $folder->is_empty() ) {
+        if ($folder->existsFolder() || $folder->isEmpty()) {
             return;
         }
 
-        $folder->create_folder_path();
+        $folder->createFolderPath();
     }
 
     /// Raising errors
 
-    protected function raise_file_not_found_error($filename)
+    protected function raiseFileNotFoundError($filename)
     {
-        throw new File_Not_Found_Error(
+        throw new FileNotFoundError(
             "File '{$filename}' not found.",
             $filename
         );

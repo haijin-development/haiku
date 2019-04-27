@@ -1,6 +1,6 @@
 # Haijin Haiku
 
-The most simple template engine possible inspired in Ruby's [Slim](http://slim-lang.com/) sintax.
+The most simple template engine possible inspired in Ruby's [Slim](http://slim-lang.com/) syntax.
 
 [![Latest Stable Version](https://poser.pugx.org/haijin/haiku/version)](https://packagist.org/packages/haijin/haiku)
 [![Latest Unstable Version](https://poser.pugx.org/haijin/haiku/v/unstable)](https://packagist.org/packages/haijin/haiku)
@@ -9,11 +9,10 @@ The most simple template engine possible inspired in Ruby's [Slim](http://slim-l
 
 **Highlights**
 
-* Minimalist sintax.
+* Minimalist syntax.
 * Uses indentation instead of closing tags.
-* Supports PHP expressions. No input filters nor a different sintax to evaluate logic.
 * Compiles `haiku` files to regular cached PHP files for efficiency.
-* Minimum amount of features and logic. Delegates the inclussion of sub-templates to the view or application using this library.
+* Minimum amount of features and logic. Delegates the inclusion of sub-templates to the view or application using the templates.
 
 ### Version 1.0.0
 
@@ -26,7 +25,7 @@ If you like it a lot you may contribute by [financing](https://github.com/haijin
 1. [Installation](#c-1)
 2. [Example](#c-2)
 3. [Usage](#c-3)
-    1. [Haiku sintax](#c-3-1)
+    1. [Haiku syntax](#c-3-1)
         1. [Html tags](#c-3-1-1)
         2. [Tags attributes](#c-3-1-2)
         3. [Tags id and classes shortcuts](#c-3-1-3)
@@ -82,7 +81,7 @@ html
 ## Usage
 
 <a name="c-3-1"></a>
-### Haiku sintax
+### Haiku syntax
 
 Haiku is a minimalist HTML template builder that uses indentation to avoid closing tags explicitly.
 
@@ -119,7 +118,7 @@ html lang = "en"
 <a name="c-3-1-2"></a>
 #### Tags attributes
 
-The atrribute name, the symbol `=` and the attribute value can have any number of optional spaces:
+The attribute name, the symbol `=` and the attribute value can have any number of optional spaces:
 
 ```
 html lang = "en"
@@ -187,7 +186,7 @@ div.row
 
 If the tag defines an `id` with both the jquery shortcut and its `id` attribute, the attribute has priority.
 
-If the tag defines a `class` with both the jquery sortcut and its `class` attribute, the attribute `class` is merged into the jquery shorcut:
+If the tag defines a `class` with both the jquery shortcut and its `class` attribute, the attribute `class` is merged into the jquery shortcut:
 
 ```
 div.row
@@ -235,7 +234,7 @@ Use unescaped text to render the contents of another template or dynamically gen
 
 ```
 body
-    != $view->render_template( "subtemplate.haiku" )
+    != $view->renderTemplate( "subtemplate.haiku" )
 ```
 
 <a name="c-3-1-5"></a>
@@ -274,7 +273,7 @@ body
 Interpolate PHP code in the attributes declarations with `{{}}`:
 
 ```
-div.user-{{ $user->get_id() }}
+div.user-{{ $user->getId() }}
 ```
 
 will output
@@ -285,7 +284,7 @@ will output
 ```
 
 ```
-a href = {{ $view->get_url() }}
+a href = {{ $view->getUrl() }}
 ```
 
 will output
@@ -302,27 +301,27 @@ will output
 - foreach( $users as $user ) do
     tr
         td
-            = $user->get_name()
+            = $user->getName()
         td
-            = $user->get_lastname()
+            = $user->getLastname()
 ```
 
 ```
 - while( $user !== null ) do
     tr
         td
-            = $user->get_name()
+            = $user->getName()
         td
-            = $user->get_lastname()
+            = $user->getLastname()
 ```
 
 ```
 - for( $i; $i < 10; $i++ ) do
     tr
         td
-            = $users[ $i ]->get_name()
+            = $users[ $i ]->getName()
         td
-            = $users[ $i ]->get_lastname()
+            = $users[ $i ]->getLastname()
 ```
 
 <a name="c-3-1-8"></a>
@@ -330,7 +329,7 @@ will output
 
 ```
 - if( $user !== null ) do
-    div = $user->get_name() . $user->get_lastname()
+    div = $user->getName() . $user->getLastname()
 ```
 
 ```
@@ -338,13 +337,13 @@ will output
 
     = "No user id logged in"
 
-- elseif( $user->is_admin() ) do
+- elseif( $user->isAdmin() ) do
 
-    = "Admin: " . $user->get_name() . $user->get_lastname()
+    = "Admin: " . $user->getName() . $user->getLastname()
 
 - else do
 
-    = "User: " . $user->get_name() . $user->get_lastname()
+    = "User: " . $user->getName() . $user->getLastname()
 
 ```
 
@@ -393,11 +392,11 @@ $renderer = new Renderer();
 
 $renderer->configure( function($renderer) {
 
-    $renderer->cache_folder = "php-templates-cache";
+    $renderer->cacheFolder = "php-templates-cache";
 
 });
 
-$html = $renderer->render_file( "sample.haiku.html", [
+$html = $renderer->renderFile( "sample.haiku.html", [
     "author" => "Haijin Development"
 ]);
 ```
@@ -429,5 +428,14 @@ This makes `haijin/haiku` pretty efficient to render its templates as it relies 
 ## Running the specs
 
 ```
+composer specs
+```
+
+Or if you want to run the tests using a Docker with PHP 7.2:
+
+```
+sudo docker run -ti -v $(pwd):/home/php-haiku --rm --name php-haiku haijin/php-dev:7.2 bash
+cd /home/php-haiku/
+composer install
 composer specs
 ```

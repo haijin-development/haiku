@@ -6,3 +6,5 @@ another-folder/
 tmp
 
 /coverage-report/
+
+.idea/

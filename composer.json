@@ -1,56 +1,62 @@
 {
-    "minimum-stability": "dev",
-    "name": "haijin/haiku",
-    "description": "The most simple template engine possible, inspired in Ruby's Slim.",
-    "keywords": ["html", "template"],
-    "type": "library",
-    "license": "MIT",
-    "homepage": "https://github.com/haijin-development/php-template",
-    "authors": [
-        {
-            "name": "Haijin Development",
-            "email": "haijin.development@gmail.com",
-            "homepage": "https://github.com/haijin-development",
-            "role": "developer"
-        }
-    ],
-    "repositories": {
-        "haijin/specs": {
-            "type": "path",
-            "url": "../php-specs",
-            "options": {
-            "symlink": true
-            }
-        },
-        "haijin/tools": {
-            "type": "path",
-            "url": "../php-tools",
-            "options": {
-            "symlink": true
-            }
-        },
-        "haijin/parser": {
-            "type": "path",
-            "url": "../php-parser",
-            "options": {
-            "symlink": true
-            }
-        }
-    },
-    "require": {
-        "php": ">=7.1.0",
-        "haijin/tools": "dev-development",
-        "haijin/parser": "dev-development"
-    },
-    "require-dev": {
-        "haijin/specs": "dev-development"
-    },
-    "autoload": {
-        "psr-4": {
-            "Haijin\\Haiku\\": ["src/"]
-        }
-    },
-    "scripts": {
-        "specs": "php ./vendor/bin/specs"
+  "minimum-stability": "dev",
+  "name": "haijin/haiku",
+  "description": "The most simple template engine possible, inspired in Ruby's Slim.",
+  "keywords": [
+    "html",
+    "template"
+  ],
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/haijin-development/php-template",
+  "authors": [
+    {
+      "name": "Haijin Development",
+      "email": "haijin.development@gmail.com",
+      "homepage": "https://github.com/haijin-development",
+      "role": "developer"
     }
+  ],
+  "repositories": {
+    "haijin/specs": {
+      "type": "path",
+      "url": "../php-specs",
+      "options": {
+        "symlink": true
+      }
+    },
+    "haijin/tools": {
+      "type": "path",
+      "url": "../php-tools",
+      "options": {
+        "symlink": true
+      }
+    },
+    "haijin/parser": {
+      "type": "path",
+      "url": "../php-parser",
+      "options": {
+        "symlink": true
+      }
+    }
+  },
+  "require": {
+    "php": ">=7.1.0",
+    "haijin/tools": "dev-development",
+    "haijin/parser": "dev-development"
+  },
+  "require-dev": {
+    "haijin/specs": "dev-development",
+    "phpunit/php-code-coverage": "^7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Haijin\\Haiku\\": [
+        "src/"
+      ]
+    }
+  },
+  "scripts": {
+    "specs": "php ./vendor/bin/specs"
+  }
 }

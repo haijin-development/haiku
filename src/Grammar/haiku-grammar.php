@@ -2,42 +2,42 @@
 
 namespace Haijin\Haiku\Grammar;
 
-use Haijin\Ordered_Collection;
-use Haijin\Haiku\Dom\Haiku_Document;
-use Haijin\Haiku\Dom\Haiku_Tag;
-use Haijin\Haiku\Dom\Haiku_Bracked_Statement;
-use Haijin\Haiku\Dom\Haiku_PHP_Expression;
-use Haijin\Haiku\Dom\Haiku_PHP_Echoed_Expression;
-use  Haijin\Haiku\Errors\Not_Unique_Indentation_Char_Error;
-use  Haijin\Haiku\Errors\Indentation_Char_Missmatch_Error;
-use  Haijin\Haiku\Errors\Unmatched_Indentation_Error;
-use  Haijin\Haiku\Errors\Invalid_Indentation_Increment_Error;
+use Haijin\Haiku\Dom\HaikuBrackedStatement;
+use Haijin\Haiku\Dom\HaikuDocument;
+use Haijin\Haiku\Dom\HaikuPHPEchoedExpression;
+use Haijin\Haiku\Dom\HaikuPHPExpression;
+use Haijin\Haiku\Dom\HaikuTag;
+use Haijin\Haiku\Errors\IndentationCharMissmatchError;
+use Haijin\Haiku\Errors\InvalidIndentationIncrementError;
+use Haijin\Haiku\Errors\NotUniqueIndentationCharError;
+use Haijin\Haiku\Errors\UnmatchedIndentationError;
+use Haijin\OrderedCollection;
 
 
-$parser->before_parsing( function() {
+$parser->beforeParsing(function () {
 
-    $this->indentation_unit = null;
-    $this->indentation_char = null;
+    $this->indentationUnit = null;
+    $this->indentationChar = null;
 
 });
 
 /// Root
 
-$parser->expression( "root",  function($exp) {
+$parser->expression("root", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->lines_list();
+        $exp->linesList();
 
     });
 
-    $exp->handler( function($nodes_list) {
+    $exp->handler(function ($nodesList) {
 
-        $document = new Haiku_Document();
+        $document = new HaikuDocument();
 
-        $nodes_list->each_do( function($node) use($document) {
+        $nodesList->eachDo(function ($node) use ($document) {
 
-            $document->add_child( $node );
+            $document->addChild($node);
 
         });
 
@@ -50,45 +50,45 @@ $parser->expression( "root",  function($exp) {
 
 /// Lines
 
-$parser->expression( "lines_list",  function($exp) {
+$parser->expression("linesList", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->line() ->cr() ->lines_list()
+            ->line()->cr()->linesList()
             ->or()
-            ->line() ->eol();
+            ->line()->eol();
 
     });
 
-    $exp->handler( function($node, $nodes_list = null) {
+    $exp->handler(function ($node, $nodesList = null) {
 
-        if( $node === null ) {
-            return $nodes_list;
+        if ($node === null) {
+            return $nodesList;
         }
 
-        $nodes = new Ordered_Collection();
+        $nodes = new OrderedCollection();
 
-        if( $nodes_list === null ) {
+        if ($nodesList === null) {
 
-            $nodes->add( $node );
+            $nodes->add($node);
 
             return $nodes;
         }
 
-        $previous_line_node = $nodes_list->first();
+        $previousLineNode = $nodesList->first();
 
-        if( $node->indentation == $previous_line_node->indentation ) {
+        if ($node->indentation == $previousLineNode->indentation) {
 
-            $nodes->add( $node );
+            $nodes->add($node);
 
-            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+            $nodesList->eachDo(function ($eachNode) use ($node, $nodes) {
 
-                if( $node->indentation < $each_node->indentation ) {
-                    return $this->raise_unexpected_expression_error();
+                if ($node->indentation < $eachNode->indentation) {
+                    return $this->raiseUnexpectedExpressionError();
                 }
 
-                $nodes->add( $each_node );
+                $nodes->add($eachNode);
 
             });
 
@@ -96,22 +96,22 @@ $parser->expression( "lines_list",  function($exp) {
 
         }
 
-        if( $node->indentation < $previous_line_node->indentation ) {
+        if ($node->indentation < $previousLineNode->indentation) {
 
-            $nodes->add( $node );
+            $nodes->add($node);
 
-            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+            $nodesList->eachDo(function ($eachNode) use ($node, $nodes) {
 
-                if( $node->indentation < $each_node->indentation - 1 ) {
-                    $this->raise_invalid_indentation_increment_error();
+                if ($node->indentation < $eachNode->indentation - 1) {
+                    $this->raiseInvalidIndentationIncrementError();
                 }
 
-                if( $node->indentation == $each_node->indentation - 1 ) {
-                    $node->add_child( $each_node );
+                if ($node->indentation == $eachNode->indentation - 1) {
+                    $node->addChild($eachNode);
                 }
 
-                if( $node->indentation >= $each_node->indentation ) {
-                    $nodes->add( $each_node );
+                if ($node->indentation >= $eachNode->indentation) {
+                    $nodes->add($eachNode);
                 }
 
             });
@@ -120,21 +120,21 @@ $parser->expression( "lines_list",  function($exp) {
 
         }
 
-        if( $node->indentation > $previous_line_node->indentation ) {
+        if ($node->indentation > $previousLineNode->indentation) {
 
-            $nodes->add( $node );
+            $nodes->add($node);
 
-            $nodes_list->each_do( function($each_node) use($node, $nodes) {
+            $nodesList->eachDo(function ($eachNode) use ($node, $nodes) {
 
-                if( $node->indentation == $each_node->indentation ) {
-                    throw new Haijin_Error( "Invalid indentation found" );
+                if ($node->indentation == $eachNode->indentation) {
+                    throw new HaijinError("Invalid indentation found");
                 }
 
-                if( $node->indentation < $each_node->indentation ) {
-                    throw new Haijin_Error( "Invalid indentation found" );
+                if ($node->indentation < $eachNode->indentation) {
+                    throw new HaijinError("Invalid indentation found");
                 }
 
-                $nodes->add( $each_node );
+                $nodes->add($eachNode);
 
             });
 
@@ -146,47 +146,47 @@ $parser->expression( "lines_list",  function($exp) {
 
 });
 
-$parser->expression( "line", function($exp) {
+$parser->expression("line", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->indentation() ->opt( $exp->statement() );
+        $exp->indentation()->opt($exp->statement());
 
 
     });
 
-    $exp->handler( function($indentation, $tag_node = null) {
+    $exp->handler(function ($indentation, $tagNode = null) {
 
-        if( $tag_node !== null ) {
-            $tag_node->indentation = $indentation;
+        if ($tagNode !== null) {
+            $tagNode->indentation = $indentation;
         }
 
-        return $tag_node;
+        return $tagNode;
 
     });
 
 });
 
-$parser->expression( "statement",  function($exp) {
+$parser->expression("statement", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
             ->tag()
             ->or()
-            ->bracked_statement()
+            ->brackedStatement()
             ->or()
-            ->unescaped_text()
+            ->unescapedText()
             ->or()
-            ->escaped_text()
+            ->escapedText()
             ->or()
-            ->php_statement();
+            ->phpStatement();
 
     });
 
-    $exp->handler( function($tag_node = null) {
+    $exp->handler(function ($tagNode = null) {
 
-        return $tag_node;
+        return $tagNode;
 
     });
 
@@ -194,46 +194,46 @@ $parser->expression( "statement",  function($exp) {
 
 /// Indentation
 
-$parser->expression( "indentation",  function($exp) {
+$parser->expression("indentation", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp-> regex( "/((?: |\t)*)(?! |\t)/" );
+        $exp->regex("/((?: |\t)*)(?! |\t)/");
 
     });
 
-    $exp->handler( function($spaces) {
+    $exp->handler(function ($spaces) {
 
-        if( preg_match( "/\t/", $spaces ) &&  preg_match( "/ /", $spaces ) ) {
-            $this->raise_not_unique_indentation_char_error();
+        if (preg_match("/\t/", $spaces) && preg_match("/ /", $spaces)) {
+            $this->raiseNotUniqueIndentationCharError();
         }
 
-        $spaces_count = strlen( $spaces );
+        $spacesCount = strlen($spaces);
 
-        if( $this->indentation_unit == null && $spaces_count > 0 ) {
+        if ($this->indentationUnit == null && $spacesCount > 0) {
 
-            $this->indentation_unit = $spaces_count;
-            $this->indentation_char = $spaces[ 0 ];
+            $this->indentationUnit = $spacesCount;
+            $this->indentationChar = $spaces[0];
 
         }
 
-        if( $this->indentation_char == " " && preg_match( "/\t/", $spaces ) ) {
-            $this->raise_indentation_char_missmatch_error("spaces", "tabs");
+        if ($this->indentationChar == " " && preg_match("/\t/", $spaces)) {
+            $this->raiseIndentationCharMissmatchError("spaces", "tabs");
         }
-        if( $this->indentation_char == "\t" && preg_match( "/ /", $spaces ) ) {
-            $this->raise_indentation_char_missmatch_error("tabs", "spaces");
+        if ($this->indentationChar == "\t" && preg_match("/ /", $spaces)) {
+            $this->raiseIndentationCharMissmatchError("tabs", "spaces");
         }
 
-        if( $spaces_count > 0 && $spaces_count % $this->indentation_unit != 0 ) {
-            $this->raise_unmatched_indentation_error(
-                $spaces_count, $this->indentation_unit
+        if ($spacesCount > 0 && $spacesCount % $this->indentationUnit != 0) {
+            $this->raiseUnmatchedIndentationError(
+                $spacesCount, $this->indentationUnit
             );
         }
 
-        if( $spaces_count == 0 ) {
+        if ($spacesCount == 0) {
             $indentation = 0;
         } else {
-            $indentation = $spaces_count / $this->indentation_unit;
+            $indentation = $spacesCount / $this->indentationUnit;
         }
 
         return $indentation;
@@ -244,145 +244,136 @@ $parser->expression( "indentation",  function($exp) {
 
 /// Tags
 
-$parser->expression( "tag",  function($exp) {
+$parser->expression("tag", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->explicit_tag()
+            ->explicitTag()
             ->or()
-            ->implicit_div();
+            ->implicitDiv();
 
     });
 
-    $exp->handler( function($tag_node) {
-        return $tag_node;
+    $exp->handler(function ($tagNode) {
+        return $tagNode;
     });
 
 });
 
-$parser->expression( "explicit_tag",  function($exp) {
+$parser->expression("explicitTag", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->tag_name()
-                ->opt( $exp->jquery_id() )
-                ->opt( $exp->jquery_classes() )
-
-                ->space()
-
-                ->opt( $exp->tag_attributes_list() );
+            ->tagName()
+            ->opt($exp->jqueryId())
+            ->opt($exp->jqueryClasses())
+            ->space()
+            ->opt($exp->tagAttributesList());
 
     });
 
-    $exp->handler( function($tag_name, $tag_id, $tag_classes, $attributes) {
+    $exp->handler(function ($tagName, $tagId, $tagClasses, $attributes) {
 
-        $tag_node = new Haiku_Tag( $tag_name );
+        $tagNode = new HaikuTag($tagName);
 
-        if( $attributes === null ) {
+        if ($attributes === null) {
             $attributes = [];
         }
 
-        if( $tag_id !== null && ! isset( $attributes[ "id" ] ) ) {
-            $tag_node->set_attribute( "id", $tag_id );
+        if ($tagId !== null && !isset($attributes["id"])) {
+            $tagNode->setAttribute("id", $tagId);
         }
 
-        if( $tag_classes !== null ) {
-            if( isset( $attributes[ "class" ] ) ) {
-                $attributes[ "class" ] = $tag_classes . " " . $attributes[ "class" ];
+        if ($tagClasses !== null) {
+            if (isset($attributes["class"])) {
+                $attributes["class"] = $tagClasses . " " . $attributes["class"];
             } else {
-                $attributes[ "class" ] = $tag_classes;
+                $attributes["class"] = $tagClasses;
             }
         }
 
-        foreach( $attributes as $name => $value ) {
-            $tag_node->set_attribute( $name, $value );
+        foreach ($attributes as $name => $value) {
+            $tagNode->setAttribute($name, $value);
         }
 
-        return $tag_node;
+        return $tagNode;
     });
 
 });
 
-$parser->expression( "implicit_div",  function($exp) {
+$parser->expression("implicitDiv", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->jquery_id()
-
-                ->opt( $exp->jquery_classes() )
-
-                ->space()
-
-                ->opt( $exp->tag_attributes_list() )
-
+            ->jqueryId()
+            ->opt($exp->jqueryClasses())
+            ->space()
+            ->opt($exp->tagAttributesList())
             ->or()
-                ->opt( $exp->jquery_id() )
-
-                ->jquery_classes()
-
-                ->space()
-
-                ->opt( $exp->tag_attributes_list() );
+            ->opt($exp->jqueryId())
+            ->jqueryClasses()
+            ->space()
+            ->opt($exp->tagAttributesList());
 
     });
 
-    $exp->handler( function($tag_id, $tag_classes, $attributes) {
+    $exp->handler(function ($tagId, $tagClasses, $attributes) {
 
-        $tag_node = new Haiku_Tag( "div" );
+        $tagNode = new HaikuTag("div");
 
-        if( $attributes === null ) {
+        if ($attributes === null) {
             $attributes = [];
         }
 
-        if( $tag_id !== null && ! isset( $attributes[ "id" ] ) ) {
-            $tag_node->set_attribute( "id", $tag_id );
+        if ($tagId !== null && !isset($attributes["id"])) {
+            $tagNode->setAttribute("id", $tagId);
         }
 
-        if( $tag_classes !== null ) {
-            if( isset( $attributes[ "class" ] ) ) {
-                $attributes[ "class" ] = $tag_classes . " " . $attributes[ "class" ];
+        if ($tagClasses !== null) {
+            if (isset($attributes["class"])) {
+                $attributes["class"] = $tagClasses . " " . $attributes["class"];
             } else {
-                $attributes[ "class" ] = $tag_classes;
+                $attributes["class"] = $tagClasses;
             }
         }
 
-        foreach( $attributes as $name => $value ) {
-            $tag_node->set_attribute( $name, $value );
+        foreach ($attributes as $name => $value) {
+            $tagNode->setAttribute($name, $value);
         }
 
-        return $tag_node;
+        return $tagNode;
     });
 
 });
 
-$parser->expression( "tag_name",  function($exp) {
+$parser->expression("tagName", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->regex( "/([0-9a-zA-z]+)/" );
+        $exp->regex("/([0-9a-zA-z]+)/");
 
     });
 
-    $exp->handler( function($tag_string) {
+    $exp->handler(function ($tagString) {
 
-        return $tag_string;
+        return $tagString;
 
     });
 
 });
 
-$parser->expression( "jquery_id",  function($exp) {
+$parser->expression("jqueryId", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->str( "#" ) ->html_name();
+        $exp->str("#")->htmlName();
 
     });
 
-    $exp->handler( function($id) {
+    $exp->handler(function ($id) {
 
         return $id;
 
@@ -390,20 +381,20 @@ $parser->expression( "jquery_id",  function($exp) {
 
 });
 
-$parser->expression( "jquery_classes",  function($exp) {
+$parser->expression("jqueryClasses", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->jquery_class() ->jquery_classes()
+            ->jqueryClass()->jqueryClasses()
             ->or()
-            ->jquery_class();
+            ->jqueryClass();
 
     });
 
-    $exp->handler( function($class, $classes = null) {
+    $exp->handler(function ($class, $classes = null) {
 
-        if( $classes === null ) {
+        if ($classes === null) {
             return $class;
         }
 
@@ -414,15 +405,15 @@ $parser->expression( "jquery_classes",  function($exp) {
 
 });
 
-$parser->expression( "jquery_class",  function($exp) {
+$parser->expression("jqueryClass", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->str( "." ) ->html_name();
+        $exp->str(".")->htmlName();
 
     });
 
-    $exp->handler( function($class) {
+    $exp->handler(function ($class) {
 
         return $class;
 
@@ -430,57 +421,57 @@ $parser->expression( "jquery_class",  function($exp) {
 
 });
 
-$parser->expression( "tag_attributes_list",  function($exp) {
+$parser->expression("tagAttributesList", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->attribute() ->space() ->str( "," ) ->blank() ->tag_attributes_list()
+            ->attribute()->space()->str(",")->blank()->tagAttributesList()
             ->or()
             ->attribute();
 
     });
 
-    $exp->handler( function($attribute, $attribute_list = null) {
+    $exp->handler(function ($attribute, $attributeList = null) {
 
-        if( $attribute_list === null ) {
-            return  $attribute;
+        if ($attributeList === null) {
+            return $attribute;
         }
 
-        return array_merge( $attribute, $attribute_list );
+        return array_merge($attribute, $attributeList);
 
     });
 
 });
 
-$parser->expression( "attribute",  function($exp) {
+$parser->expression("attribute", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->html_name()
-            ->space() ->str( "=" ) ->space()
-            ->attribute_value();
+            ->htmlName()
+            ->space()->str("=")->space()
+            ->attributeValue();
 
     });
 
-    $exp->handler( function($name, $value) {
+    $exp->handler(function ($name, $value) {
 
-        return [ $name => $value ];
+        return [$name => $value];
 
     });
 
 });
 
-$parser->expression( "attribute_value",  function($exp) {
+$parser->expression("attributeValue", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->string_literal();
+        $exp->stringLiteral();
 
     });
 
-    $exp->handler( function($string) {
+    $exp->handler(function ($string) {
 
         return $string;
 
@@ -490,74 +481,74 @@ $parser->expression( "attribute_value",  function($exp) {
 
 /// Statements
 
-$parser->expression( "bracked_statement",  function($exp) {
+$parser->expression("brackedStatement", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
-        $exp ->regex( "/-(.+) do/" ) ->space();
-
-    });
-
-    $exp->handler( function($text) {
-
-        return new Haiku_Bracked_Statement( trim( $text ) );
+        $exp->regex("/-(.+) do/")->space();
 
     });
 
-});
+    $exp->handler(function ($text) {
 
-$parser->expression( "unescaped_text",  function($exp) {
-
-    $exp->matcher( function($exp) {
-
-        $exp
-            ->regex( "/!=\s*\{\{(.+)\}\}/sU" ) ->space()
-            ->or()
-            ->regex( "/!=(.+)(?=\n|$)/" );
-
-    });
-
-    $exp->handler( function($text) {
-
-        return new Haiku_PHP_Echoed_Expression( trim( $text ), false );
+        return new HaikuBrackedStatement(trim($text));
 
     });
 
 });
 
-$parser->expression( "escaped_text",  function($exp) {
+$parser->expression("unescapedText", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->regex( "/=\s*\{\{(.+)\}\}/sU" ) ->space()
+            ->regex("/!=\s*\{\{(.+)\}\}/sU")->space()
             ->or()
-            ->regex( "/=(.+)(?=\n|$)/" );
+            ->regex("/!=(.+)(?=\n|$)/");
 
     });
 
-    $exp->handler( function($text) {
+    $exp->handler(function ($text) {
 
-        return new Haiku_PHP_Echoed_Expression( trim( $text ) );
+        return new HaikuPHPEchoedExpression(trim($text), false);
 
     });
 
 });
 
-$parser->expression( "php_statement",  function($exp) {
+$parser->expression("escapedText", function ($exp) {
 
-    $exp->matcher( function($exp) {
+    $exp->matcher(function ($exp) {
 
         $exp
-            ->regex( "/-\s*\{\{(.+)\}\}/sU" ) ->space()
+            ->regex("/=\s*\{\{(.+)\}\}/sU")->space()
             ->or()
-            ->regex( "/-(.+)(?=\n|$)/" );
+            ->regex("/=(.+)(?=\n|$)/");
 
     });
 
-    $exp->handler( function($text) {
+    $exp->handler(function ($text) {
 
-        return new Haiku_PHP_Expression( trim( $text ) );
+        return new HaikuPHPEchoedExpression(trim($text));
+
+    });
+
+});
+
+$parser->expression("phpStatement", function ($exp) {
+
+    $exp->matcher(function ($exp) {
+
+        $exp
+            ->regex("/-\s*\{\{(.+)\}\}/sU")->space()
+            ->or()
+            ->regex("/-(.+)(?=\n|$)/");
+
+    });
+
+    $exp->handler(function ($text) {
+
+        return new HaikuPHPExpression(trim($text));
 
     });
 
@@ -565,128 +556,128 @@ $parser->expression( "php_statement",  function($exp) {
 
 /// Interpolated expressions
 
-$parser->expression( "html_name",  function($exp) {
+$parser->expression("htmlName", function ($exp) {
 
-    $exp->processor( function() {
+    $exp->processor(function () {
 
-        $char = $this->peek_char();
+        $char = $this->peekChar();
 
-        if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" && $char != "{" ) {
+        if (!ctype_alnum($char) && $char != "-" && $char != "_" && $char != "{") {
             return false;
         }
 
         $literal = "";
 
-        while( $this->not_end_of_stream() ) {
+        while ($this->notEndOfStream()) {
 
-            $char = $this->next_char();
+            $char = $this->nextChar();
 
-            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
+            if ($char == "{" && $this->peekChar(1) == "{") {
                 $literal .= "<?php echo htmlspecialchars(";
 
-                $char = $this->next_char();
+                $char = $this->nextChar();
 
-                while( $char != "}" && $this->peek_char( 1 ) != "}" ) {
-                    $char = $this->next_char();
+                while ($char != "}" && $this->peekChar(1) != "}") {
+                    $char = $this->nextChar();
 
                     $literal .= $char;
                 }
 
                 $literal .= "); ?>";
 
-                $this->skip_chars(2);
+                $this->skipChars(2);
 
-                $char = $this->next_char();
+                $char = $this->nextChar();
             }
 
-            if( ! ctype_alnum( $char ) && $char != "-" && $char != "_" ) {
-                $this->skip_chars( -1 );
+            if (!ctype_alnum($char) && $char != "-" && $char != "_") {
+                $this->skipChars(-1);
                 break;
             }
 
-            $literal .= \htmlspecialchars( $char );
+            $literal .= \htmlspecialchars($char);
         }
 
-        $this->set_result( $literal );
+        $this->setResult($literal);
 
         return true;
 
     });
 
-    $exp->handler( function($tag_string) {
+    $exp->handler(function ($tagString) {
 
-        return $tag_string;
+        return $tagString;
 
     });
 
 });
 
-$parser->expression( "string_literal",  function($exp) {
+$parser->expression("stringLiteral", function ($exp) {
 
-    $exp->processor( function() {
+    $exp->processor(function () {
 
-        if( $this->peek_char() != '"' ) {
+        if ($this->peekChar() != '"') {
             return false;
         }
 
-        $this->skip_chars( 1 );
+        $this->skipChars(1);
 
-        $current_literal = "";
+        $currentLiteral = "";
 
-        $scaping_next = false;
+        $scapingNext = false;
 
-        while( $this->not_end_of_stream() ) {
+        while ($this->notEndOfStream()) {
 
-            $char = $this->next_char();
+            $char = $this->nextChar();
 
-            if( $scaping_next === true ) {
-                $current_literal .= \htmlspecialchars( $char );
+            if ($scapingNext === true) {
+                $currentLiteral .= \htmlspecialchars($char);
 
-                $scaping_next = false;
+                $scapingNext = false;
                 continue;
             }
 
-            if( $char == '\\' ) {
-                $scaping_next = true;
+            if ($char == '\\') {
+                $scapingNext = true;
                 continue;
             }
 
-            if( $char == '"' ) {
+            if ($char == '"') {
                 break;
             }
 
-            if( $char == "{" && $this->peek_char( 1 ) == "{" ) {
-                $current_literal .= "<?php echo htmlspecialchars(";
+            if ($char == "{" && $this->peekChar(1) == "{") {
+                $currentLiteral .= "<?php echo htmlspecialchars(";
 
-                $char = $this->next_char();
+                $char = $this->nextChar();
 
-                while( $char != "}" && $this->peek_char( 1 ) != "}" ) {
-                    $char = $this->next_char();
+                while ($char != "}" && $this->peekChar(1) != "}") {
+                    $char = $this->nextChar();
 
-                    $current_literal .= $char;
+                    $currentLiteral .= $char;
                 }
 
-                $current_literal .= "); ?>";
+                $currentLiteral .= "); ?>";
 
-                $this->skip_chars(2);
+                $this->skipChars(2);
 
-                $char = $this->next_char();
+                $char = $this->nextChar();
 
-                if( $char == '"' ) {
+                if ($char == '"') {
                     break;
                 }
             }
 
-            $current_literal .= \htmlspecialchars( $char );
+            $currentLiteral .= \htmlspecialchars($char);
         }
 
-        $this->set_result( $current_literal );
+        $this->setResult($currentLiteral);
 
         return true;
 
     });
 
-    $exp->handler( function($string) {
+    $exp->handler(function ($string) {
 
         return $string;
 
@@ -696,42 +687,42 @@ $parser->expression( "string_literal",  function($exp) {
 
 /// Custom methods
 
-$parser->def( "raise_unmatched_indentation_error",  function($spaces_count, $unit) {
+$parser->def("raiseUnmatchedIndentationError", function ($spacesCount, $unit) {
 
-    if( $this->indentation_char == "\t" ) {
+    if ($this->indentationChar == "\t") {
         $char = "tabs";
     } else {
         $char = "spaces";
     };
 
-    throw new Unmatched_Indentation_Error(
-            "The template is using indentation units of {$unit} {$char}, but a line with {$spaces_count} {$char} was found. At line: {$this->current_line()} column: {$this->current_column()}."
-        );
-
-});
-
-$parser->def( "raise_not_unique_indentation_char_error",  function() {
-
-    throw new Not_Unique_Indentation_Char_Error(
-            "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->current_line()} column: {$this->current_column()}."
+    throw new UnmatchedIndentationError(
+        "The template is using indentation units of {$unit} {$char}, but a line with {$spacesCount} {$char} was found. At line: {$this->currentLine()} column: {$this->currentColumn()}."
     );
 
 });
 
-$parser->def( "raise_indentation_char_missmatch_error",  function($used_chars, $missmatched_chars) {
+$parser->def("raiseNotUniqueIndentationCharError", function () {
 
-    throw new Indentation_Char_Missmatch_Error(
-            "The template is indenting with {$used_chars} in one line and {$missmatched_chars} in another one, use only tabs or only spaces in all lines. At line: {$this->current_line()} column: {$this->current_column()}."
+    throw new NotUniqueIndentationCharError(
+        "The template is using both tabs and spaces to indent, use only tabs or only spaces. At line: {$this->currentLine()} column: {$this->currentColumn()}."
     );
 
 });
 
-$parser->def( "raise_invalid_indentation_increment_error",  function() {
+$parser->def("raiseIndentationCharMissmatchError", function ($usedChars, $missmatchedChars) {
 
-    $line_index = $this->current_line() - 1;
+    throw new IndentationCharMissmatchError(
+        "The template is indenting with {$usedChars} in one line and {$missmatchedChars} in another one, use only tabs or only spaces in all lines. At line: {$this->currentLine()} column: {$this->currentColumn()}."
+    );
 
-    throw new Invalid_Indentation_Increment_Error(
-            "Invalid indentation was found. An increment of only one unit was expected. At line: {$line_index} column: {$this->current_column()}."
+});
+
+$parser->def("raiseInvalidIndentationIncrementError", function () {
+
+    $lineIndex = $this->currentLine() - 1;
+
+    throw new InvalidIndentationIncrementError(
+        "Invalid indentation was found. An increment of only one unit was expected. At line: {$lineIndex} column: {$this->currentColumn()}."
     );
 
 });
